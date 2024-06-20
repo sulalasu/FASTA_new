@@ -13,6 +13,7 @@
 // find out, how to add new nucleotide class to sequence vector
 // how to make sure, right header is mapped to right sequence
 // clean up main by converting code parts to functions
+// add destructors 
 // put classes into .c und .h files.
 
 
@@ -28,22 +29,65 @@
 
 class Nucleotide {};
 
-class Adenine : public Nucleotide {};
-class Thymine : public Nucleotide {};
-class Guanine : public Nucleotide {};
-class Cytosine : public Nucleotide {};
+class Adenine : public Nucleotide 
+{
+public:
+    void print()
+    {
+        std::cout << "A";
+    }
+};
+class Thymine : public Nucleotide
+{
+public:
+    void print()
+    {
+        std::cout << "T";
+    }
+};
+
+class Guanine : public Nucleotide{
+public:
+    void print()
+    {
+        std::cout << "G";
+    }
+};
+class Cytosine : public Nucleotide 
+{
+public:
+    void print()
+    {
+        std::cout << "C";
+    }
+};
+
 
 
 //-> contains vector of nucleotides.
 class Sequence 
 {
 private:
-    std::vector<Nucleotide> m_nucleotideSequence;
+    std::vector<Nucleotide* > m_nucleotideSequence;
 public:
-    void addNucleotide(const Nucleotide& i_nucleotide)
+    //constructors:
+    Sequence() {}
+    //destructor:
+    ~Sequence() {}
+
+    void addNucleotide(Nucleotide* i_nucleotide)
     {
         m_nucleotideSequence.push_back(i_nucleotide);
     }
+
+    //TODO: make a member function, that prints all nucleotides
+    // void printSeq()
+    // {
+    //     for (auto elem : m_nucleotideSequence)
+    //     {
+    //         elem->print()
+    //     }
+    // }
 }; 
 
 
@@ -136,7 +180,11 @@ std::cout << "Opening file named: " << argv[1] << std::endl;
 // declare necessary variables
 std::string line;
 std::vector<Nucleotide> nucleotideSequence;
-bool newHeader = true;
+
+bool previousLineWasHeader = false; //maybe use bool to check if new or old header-seq pair?
+//dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
+//Header currentHeader; // use to later append to mapping 
+Sequence currentSequence; //use to later append to mapping
 
 // open and read file
 std::ifstream inputFASTA;
@@ -146,20 +194,29 @@ inputFASTA.open(argv[1]);
 if (inputFASTA.is_open())
 {
     // TODO:
-    // clear line and sequence and header
+    // clear line and sequence and header variables
     // then: start while loop
-    // in while loop: 
+    // in while loop (while iterating over lines:)
+    //      if line startswith '<': add new Header obj.
+    //      set newHeader to false.
+    //      next line
     while (getline(inputFASTA, line)) 
     {
 
-        if (line[0] == '>' && newHeader == true)
-        // its a comment line:
+        if (line[0] == '>' && previousLineWasHeader == true)
+        // TODO: add empty sequence to mapping
         {
             Header* tempHeader = new Header(line);
             tempHeader->printHeader();
             //newHeader = false;
         }
+        else if (line[0] == '>' && previousLineWasHeader == false)
+        // line is a new header, so add to mapping.
+        {
+            //currentHeader = line;
+        }
         else
+        // line = a sequence line
         {
             std::cout << "\nnot a header\n" << line << "\n" << std::endl;
             for (const auto& nt : line)
@@ -169,20 +226,34 @@ if (inputFASTA.is_open())
                 {
                     case 'a':
                     case 'A':
+                    {
                         std::cout << "case a - " << nt << std::endl;
+                        Adenine* pA = new Adenine;
+                        currentSequence.addNucleotide(pA);
+                        // delete pA;
+                        // wir reservieren im Heap speicher für eine instanz der klasse
+                        // adenine, unser pointer pA zeigt auf diesen speicher.
                         //TODO: add new nucleotide instance to 'nucleotideSequence' vector
+                    }
                     case 't':
                     case 'T':
+                    {
                         std::cout << "case t - " << nt << std::endl;
+                    }
                     case 'g':
                     case 'G':
+                    {
                         std::cout << "case g - " << nt << std::endl;
+                    }
                     case 'c':
                     case 'C':
+                    {
                         std::cout << "case c - " << nt << std::endl;
+                    }
                 }
                 //nucleotideSequence.push_back()
                 //std::cout << nt << " ";
+                //nucleotideSequence.printSeq();
             }
             std::cout << std::endl;
         }
