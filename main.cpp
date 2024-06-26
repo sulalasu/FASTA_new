@@ -27,40 +27,96 @@
 //                    classes 
 //========================================================================  
 
-class Nucleotide {};
+class Nucleotide 
+{
+public:
+    //constructor
+    Nucleotide() {}
+    //destructor
+    virtual ~Nucleotide() {}
+    //member functions:
+    virtual void printNt() const = 0; // const here: function does not modify member data in the class it is a part of
+    virtual std::string returnNt() const = 0; // pure virtual function => no definition,
+    // but subclasses will have a definition
+};
+
 
 class Adenine : public Nucleotide 
 {
 public:
-    void print()
+    // Member Functions
+    void printNt() const override
     {
-        std::cout << "A";
-    }
+        std::cout << m_Nt;
+    };
+
+    std::string returnNt() const override
+    {
+        return (m_Nt);
+    };
+
+private:
+    const std::string m_Nt = "A";
 };
+
+
 class Thymine : public Nucleotide
 {
 public:
-    void print()
+    // Member Functions
+    void printNt() const override
     {
-        std::cout << "T";
-    }
+        std::cout << m_Nt;
+    };
+
+    std::string returnNt() const override
+    {
+        return (m_Nt);
+    };
+
+private:
+    const std::string m_Nt = "T";
 };
 
-class Guanine : public Nucleotide{
+
+class Guanine : public Nucleotide
+{
 public:
-    void print()
+    // Member Functions
+    void printNt() const override
     {
-        std::cout << "G";
-    }
+        std::cout << m_Nt;
+    };
+
+    std::string returnNt() const override
+    {
+        return (m_Nt);
+    };
+
+private:
+    const std::string m_Nt = "G";
 };
+
+
 class Cytosine : public Nucleotide 
 {
 public:
-    void print()
+    // Member Functions
+    void printNt() const override
     {
-        std::cout << "C";
-    }
+        std::cout << m_Nt;
+    };
+
+    std::string returnNt() const override
+    {
+        return (m_Nt);
+    };
+
+private:
+    const std::string m_Nt = "G";
 };
+
+
 
 
 
@@ -136,11 +192,14 @@ int main(int argc, char* argv[])
 {
 
 //check for number of command line arguments
-if (argc != 2)
+if (argc != 3)
 {
-    std::cout << "ERROR: Please supply exactly one argument, which is the filename" << std::endl;
+    std::cout << "ERROR: Please supply exactly two arguments: Input Filename and Output filename" << std::endl;
+    return 1;
 }
 std::cout << "Opening file named: " << argv[1] << std::endl;
+std::cout << "Writing to: " << argv[2] << std::endl;
+
 
 //main programn:
 
@@ -221,7 +280,7 @@ if (inputFASTA.is_open())
             std::cout << "\nnot a header\n" << line << "\n" << std::endl;
             for (const auto& nt : line)
             {
-                //TODO: switch statement to decide between nucleotides.x
+                //TODO: switch statement to decide between nucleotides.
                 switch (nt)
                 {
                     case 'a':
