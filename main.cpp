@@ -158,9 +158,10 @@ private:
 
 public:
     //constructor
+    Header() {}
     Header(const std::string& i_commentString) : m_comment(i_commentString) {}
     //destructor
-        //TODO
+    ~Header() = default;
 
     //getter:
     void printHeader() 
@@ -170,6 +171,11 @@ public:
     const std::string& getHeader() const
     {
         return m_comment;
+    }
+    //setter:
+    std::string appendNewLine(const std::string& i_newComment)
+    {
+        return (m_comment + i_newComment);
     }
 };
 
@@ -182,7 +188,12 @@ class FASTA
 private:
     std::map<Header, Sequence> m_contents;
 public:
+    FASTA() {}
+    ~FASTA() = default;
 
+    //setter
+
+    //getter
 };
 
 
@@ -242,16 +253,19 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 // declare necessary variables
 std::string line;
 std::vector<Nucleotide*> nucleotideSequence;
+FASTA global_FASTA;
 
 bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
 //Header currentHeader; // use to later append to mapping 
 Sequence currentSequence; //use to later append to mapping
+Header currentHeader; // use to fill/empty with current header info
 
 // open and read file
 std::ifstream inputFASTA;
 std::cout << argv[1] << std::endl;
 inputFASTA.open(argv[1]);
+
 
 // if successfully opened, read line by line
 if (inputFASTA.is_open())
@@ -265,24 +279,23 @@ if (inputFASTA.is_open())
     //      next line
     while (getline(inputFASTA, line)) 
     {
-        if (line.empty())
-        {
-            continue;
-            //std::cout << "Empty line:__|" << line << "|__" << std::endl;
-        }
+
+        if (line.empty()) {continue;}
+
         else if (line[0] == '>' && newHeader == true)
-        // line = header
         // TODO: add empty sequence to mapping
         {
-            std::cout << "1. Header:   " << line << std::endl;
+
+            // std::cout << "1. Header:   " << line << std::endl;
             Header* tempHeader = new Header(line);
             //tempHeader->printHeader();
             newHeader = false;
+            //tempseq =  
         }
         else if (line[0] == '>' && newHeader == false)
         // line --> append to previous header
         {
-            std::cout << "2.Header:   " << line << std::endl;
+            std::cout << "2.Header:   " << line.substr(1,-1) << std::endl;
             //currentHeader = line;
         }
         else
@@ -300,6 +313,7 @@ if (inputFASTA.is_open())
                         {
                         std::cout << "case a - " << nt << std::endl;
                         Adenine* pA = new Adenine;
+                        pA->printNt();
                         currentSequence.addNucleotide(pA);
                         // delete pA;
                         // wir reservieren im Heap speicher für eine instanz der klasse
