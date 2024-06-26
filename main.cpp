@@ -238,7 +238,7 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 
 // declare necessary variables
 std::string line;
-std::vector<Nucleotide> nucleotideSequence;
+std::vector<Nucleotide*> nucleotideSequence;
 
 bool previousLineWasHeader = false; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
@@ -247,6 +247,7 @@ Sequence currentSequence; //use to later append to mapping
 
 // open and read file
 std::ifstream inputFASTA;
+std::cout << argv[1] << std::endl;
 inputFASTA.open(argv[1]);
 
 // if successfully opened, read line by line
@@ -261,8 +262,9 @@ if (inputFASTA.is_open())
     //      next line
     while (getline(inputFASTA, line)) 
     {
-
+        //std::cout << line << std::endl;
         if (line[0] == '>' && previousLineWasHeader == true)
+        // line = header
         // TODO: add empty sequence to mapping
         {
             Header* tempHeader = new Header(line);
@@ -270,12 +272,12 @@ if (inputFASTA.is_open())
             //newHeader = false;
         }
         else if (line[0] == '>' && previousLineWasHeader == false)
-        // line is a new header, so add to mapping.
+        // line = new header --> add to mapping.
         {
             //currentHeader = line;
         }
         else
-        // line = a sequence line
+        // line = sequence line
         {
             std::cout << "\nnot a header\n" << line << "\n" << std::endl;
             for (const auto& nt : line)
