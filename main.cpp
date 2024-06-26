@@ -35,47 +35,75 @@ class Nucleotide
 public:
     //constructor
     Nucleotide() {}
+    
     //destructor
     virtual ~Nucleotide() {}
     //member functions:
-    virtual void printNt() const = 0; // const here: function does not modify member data in the class it is a part of
-    virtual std::string returnNt() const = 0; // pure virtual function => no definition,
+    // virtual void printNt() const = 0; // const here: function does not modify member data in the class it is a part of
+    //virtual std::string returnNt() const = 0; // pure virtual function => no definition,
     // but subclasses will have a definition
+
+    void printNt() const
+    {
+        std::cout << m_Nt;
+    } 
+    std::string returnNt() const
+    {
+        return (m_Nt);
+    };
+
+
+protected:
+    Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derived classes
+    // Change "protected" to "public" to allow others to instantiate A.
+
+// protected:
+//     //set m_Nt:
+//     void initNt(const std::string& i_Nt)
+//     {
+//         m_Nt = i_Nt
+//     }
+
+private:
+    std::string m_Nt;
 };
 
 
 class Adenine : public Nucleotide 
 {
+// public:
+//     // Member Functions
+//     void printNt() const override
+//     {
+//         std::cout << m_Nt;
+//     };
+
+//     std::string returnNt() const override
+//     {
+//         return (m_Nt);
+//     };
+
 public:
-    // Member Functions
-    void printNt() const override
-    {
-        std::cout << m_Nt;
-    };
-
-    std::string returnNt() const override
-    {
-        return (m_Nt);
-    };
-
-private:
-    const std::string m_Nt = "A";
+    Adenine() : Nucleotide("A") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 };
 
 
 class Thymine : public Nucleotide
 {
-public:
-    // Member Functions
-    void printNt() const override
-    {
-        std::cout << m_Nt;
-    };
+// public:
+//     // Member Functions
+//     void printNt() const override
+//     {
+//         std::cout << m_Nt;
+//     };
 
-    std::string returnNt() const override
-    {
-        return (m_Nt);
-    };
+//     std::string returnNt() const override
+//     {
+//         return (m_Nt);
+//     };
+public:
+    Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+
 
 private:
     const std::string m_Nt = "T";
@@ -84,17 +112,20 @@ private:
 
 class Guanine : public Nucleotide
 {
-public:
-    // Member Functions
-    void printNt() const override
-    {
-        std::cout << m_Nt;
-    };
+// public:
+//     // Member Functions
+//     void printNt() const override
+//     {
+//         std::cout << m_Nt;
+//     };
 
-    std::string returnNt() const override
-    {
-        return (m_Nt);
-    };
+//     std::string returnNt() const override
+//     {
+//         return (m_Nt);
+//     };
+public:
+    Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+
 
 private:
     const std::string m_Nt = "G";
@@ -103,17 +134,20 @@ private:
 
 class Cytosine : public Nucleotide 
 {
-public:
-    // Member Functions
-    void printNt() const override
-    {
-        std::cout << m_Nt;
-    };
+// public:
+//     // Member Functions
+//     void printNt() const override
+//     {
+//         std::cout << m_Nt;
+//     };
 
-    std::string returnNt() const override
-    {
-        return (m_Nt);
-    };
+//     std::string returnNt() const override
+//     {
+//         return (m_Nt);
+//     };
+public:
+    Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+
 
 private:
     const std::string m_Nt = "G";
@@ -311,10 +345,11 @@ if (inputFASTA.is_open())
                     case 'a':
                     case 'A':
                         {
-                        std::cout << "case a - " << nt << std::endl;
-                        Adenine* pA = new Adenine;
-                        pA->printNt();
-                        currentSequence.addNucleotide(pA);
+                        Adenine* pNt = new Adenine;
+                        pNt->printNt();
+                        std::cout << std::endl;
+                        //currentSequence.addNucleotide(pA);
+
                         // delete pA;
                         // wir reservieren im Heap speicher für eine instanz der klasse
                         // adenine, unser pointer pA zeigt auf diesen speicher.
@@ -324,20 +359,27 @@ if (inputFASTA.is_open())
                     case 't':
                     case 'T':
                         {
-                        std::cout << "case t - " << nt << std::endl;
-                        }
+                        Thymine* pNt = new Thymine;
+                        pNt->printNt();
+                        std::cout << std::endl;
+                        } 
                         break;
 
                     case 'g':
                     case 'G':
                         {
-                        std::cout << "case g - " << nt << std::endl;
-                        }
+                        Guanine* pNt = new Guanine;
+                        pNt->printNt();
+                        std::cout << std::endl;
+                        } 
                         break;
                     case 'c':
                     case 'C':
                         {
-                        std::cout << "case c - " << nt << std::endl;
+                        Cytosine* pNt = new Cytosine;
+                        pNt->printNt();
+                        std::cout << std::endl;
+
                         }
                         break;
                 }
