@@ -16,6 +16,9 @@
 // add destructors 
 // put classes into .c und .h files.
 
+//switch case: add breaks
+// then: try to change ACGT classes so that they are all derived from base
+// (meaning, they dont have classes, but use base functions and member vars)
 
 //========================================================================  
 //                    helper functions 
@@ -240,7 +243,7 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 std::string line;
 std::vector<Nucleotide*> nucleotideSequence;
 
-bool previousLineWasHeader = false; //maybe use bool to check if new or old header-seq pair?
+bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
 //Header currentHeader; // use to later append to mapping 
 Sequence currentSequence; //use to later append to mapping
@@ -262,24 +265,31 @@ if (inputFASTA.is_open())
     //      next line
     while (getline(inputFASTA, line)) 
     {
-        //std::cout << line << std::endl;
-        if (line[0] == '>' && previousLineWasHeader == true)
+        if (line.empty())
+        {
+            continue;
+            //std::cout << "Empty line:__|" << line << "|__" << std::endl;
+        }
+        else if (line[0] == '>' && newHeader == true)
         // line = header
         // TODO: add empty sequence to mapping
         {
+            std::cout << "1. Header:   " << line << std::endl;
             Header* tempHeader = new Header(line);
-            tempHeader->printHeader();
-            //newHeader = false;
+            //tempHeader->printHeader();
+            newHeader = false;
         }
-        else if (line[0] == '>' && previousLineWasHeader == false)
-        // line = new header --> add to mapping.
+        else if (line[0] == '>' && newHeader == false)
+        // line --> append to previous header
         {
+            std::cout << "2.Header:   " << line << std::endl;
             //currentHeader = line;
         }
         else
         // line = sequence line
         {
-            std::cout << "\nnot a header\n" << line << "\n" << std::endl;
+            newHeader = true;
+
             for (const auto& nt : line)
             {
                 //TODO: switch statement to decide between nucleotides.
@@ -287,7 +297,7 @@ if (inputFASTA.is_open())
                 {
                     case 'a':
                     case 'A':
-                    {
+                        {
                         std::cout << "case a - " << nt << std::endl;
                         Adenine* pA = new Adenine;
                         currentSequence.addNucleotide(pA);
@@ -295,28 +305,33 @@ if (inputFASTA.is_open())
                         // wir reservieren im Heap speicher für eine instanz der klasse
                         // adenine, unser pointer pA zeigt auf diesen speicher.
                         //TODO: add new nucleotide instance to 'nucleotideSequence' vector
-                    }
+                        }
+                        break;
                     case 't':
                     case 'T':
-                    {
+                        {
                         std::cout << "case t - " << nt << std::endl;
-                    }
+                        }
+                        break;
+
                     case 'g':
                     case 'G':
-                    {
+                        {
                         std::cout << "case g - " << nt << std::endl;
-                    }
+                        }
+                        break;
                     case 'c':
                     case 'C':
-                    {
+                        {
                         std::cout << "case c - " << nt << std::endl;
-                    }
+                        }
+                        break;
                 }
                 //nucleotideSequence.push_back()
                 //std::cout << nt << " ";
                 //nucleotideSequence.printSeq();
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
 
     // TODO:

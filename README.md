@@ -1,6 +1,8 @@
 build with 'cmake -S . -B build'
 run with 'cmake --build build && ./build/fasta test.fasta'
 
+Assumptions:
+- no Comment lines, that dont start with '>'
 
 # Header und Source (.cpp) Files:
 
@@ -99,7 +101,9 @@ public:
 
 #### *Pure* virtual function
 Base class Member function can be set as 'virtual std::string getName() **= 0**' to be set as a **Pure Virtual Function**
-
+A pure virtual function is a virtual function whose declaration ends in =0:
+A pure virtual function implicitly makes the class it is defined for abstract. Abstract classes cannot be instantiated. Derived classes need to override/implement all inherited pure virtual functions. If they do not, they too will become abstract.
+https://stackoverflow.com/questions/2652198/difference-between-a-virtual-function-and-a-pure-virtual-function
 
 # DELETE:
 cmake video bis 43:00 nochmal angeschaut.
