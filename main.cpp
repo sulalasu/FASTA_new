@@ -71,18 +71,6 @@ private:
 
 class Adenine : public Nucleotide 
 {
-// public:
-//     // Member Functions
-//     void printNt() const override
-//     {
-//         std::cout << m_Nt;
-//     };
-
-//     std::string returnNt() const override
-//     {
-//         return (m_Nt);
-//     };
-
 public:
     Adenine() : Nucleotide("A") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 };
@@ -90,20 +78,8 @@ public:
 
 class Thymine : public Nucleotide
 {
-// public:
-//     // Member Functions
-//     void printNt() const override
-//     {
-//         std::cout << m_Nt;
-//     };
-
-//     std::string returnNt() const override
-//     {
-//         return (m_Nt);
-//     };
 public:
     Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
 
 private:
     const std::string m_Nt = "T";
@@ -112,20 +88,8 @@ private:
 
 class Guanine : public Nucleotide
 {
-// public:
-//     // Member Functions
-//     void printNt() const override
-//     {
-//         std::cout << m_Nt;
-//     };
-
-//     std::string returnNt() const override
-//     {
-//         return (m_Nt);
-//     };
 public:
     Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
 
 private:
     const std::string m_Nt = "G";
@@ -134,20 +98,8 @@ private:
 
 class Cytosine : public Nucleotide 
 {
-// public:
-//     // Member Functions
-//     void printNt() const override
-//     {
-//         std::cout << m_Nt;
-//     };
-
-//     std::string returnNt() const override
-//     {
-//         return (m_Nt);
-//     };
 public:
     Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
 
 private:
     const std::string m_Nt = "G";
@@ -157,7 +109,7 @@ private:
 
 
 
-//-> contains vector of nucleotides.
+//contains vector of Nucleotide Class (or derived of it).
 class Sequence 
 {
 private:
@@ -168,19 +120,28 @@ public:
     //destructor:
     ~Sequence() {}
 
+    //getter
+    //TODO: make a member function, that prints all nucleotides
+    void printSeq()
+    {
+        for (auto elem : m_nucleotideSequence)
+        {
+            elem->printNt();
+        }
+    }
+
+    //setter
     void addNucleotide(Nucleotide* i_nucleotide)
     {
         m_nucleotideSequence.push_back(i_nucleotide);
     }
 
-    //TODO: make a member function, that prints all nucleotides
-    // void printSeq()
-    // {
-    //     for (auto elem : m_nucleotideSequence)
-    //     {
-    //         elem->print()
-    //     }
-    // }
+    void clear() 
+    {
+        m_nucleotideSequence.clear();
+    }
+
+
 }; 
 
 
@@ -200,17 +161,23 @@ public:
     //getter:
     void printHeader() 
     {
-        std::cout << "Header comment:\n" << m_comment << std::endl;
+        std::cout << "Header: " << m_comment << "|__" << std::endl;
     }
     const std::string& getHeader() const
     {
         return m_comment;
     }
+
     //setter:
-    std::string appendNewLine(const std::string& i_newComment)
+    void appendNewLine(const std::string& i_newComment)
     {
-        return (m_comment + i_newComment);
+        m_comment = m_comment + i_newComment;
     }
+    void clear()
+    {
+        m_comment = "";
+    }
+
 };
 
 
@@ -228,6 +195,14 @@ public:
     //setter
 
     //getter
+    void printFASTA() 
+    {
+        for (const auto& elem : m_contents)
+        {
+            std::cout << "TBD: print fasta" << std::endl;
+            // std::cout << elem.first << ": " << elem.second << std::endl;
+        }
+    }
 };
 
 
@@ -307,30 +282,30 @@ if (inputFASTA.is_open())
     // TODO:
     // clear line and sequence and header variables
     // then: start while loop
-    // in while loop (while iterating over lines:)
-    //      if line startswith '<': add new Header obj.
-    //      set newHeader to false.
-    //      next line
+
+    //TODO: in 1 aus 2 verschachteltet funtionen bestehende funktion verpacken:
+    // außen: while loop + if else if
+    // innen: switch-case-fun
     while (getline(inputFASTA, line)) 
     {
 
         if (line.empty()) {continue;}
-
         else if (line[0] == '>' && newHeader == true)
         // TODO: add empty sequence to mapping
         {
-
+            currentHeader.clear();
+            currentSequence.clear();
             // std::cout << "1. Header:   " << line << std::endl;
             Header* tempHeader = new Header(line);
             //tempHeader->printHeader();
             newHeader = false;
             //tempseq =  
+            currentHeader.appendNewLine(line);
         }
         else if (line[0] == '>' && newHeader == false)
         // line --> append to previous header
         {
-            std::cout << "2.Header:   " << line.substr(1,-1) << std::endl;
-            //currentHeader = line;
+            currentHeader.appendNewLine(line);
         }
         else
         // line = sequence line
@@ -346,9 +321,7 @@ if (inputFASTA.is_open())
                     case 'A':
                         {
                         Adenine* pNt = new Adenine;
-                        pNt->printNt();
-                        std::cout << std::endl;
-                        //currentSequence.addNucleotide(pA);
+                        currentSequence.addNucleotide(pNt);
 
                         // delete pA;
                         // wir reservieren im Heap speicher für eine instanz der klasse
@@ -360,8 +333,7 @@ if (inputFASTA.is_open())
                     case 'T':
                         {
                         Thymine* pNt = new Thymine;
-                        pNt->printNt();
-                        std::cout << std::endl;
+                        currentSequence.addNucleotide(pNt);
                         } 
                         break;
 
@@ -369,16 +341,14 @@ if (inputFASTA.is_open())
                     case 'G':
                         {
                         Guanine* pNt = new Guanine;
-                        pNt->printNt();
-                        std::cout << std::endl;
+                        currentSequence.addNucleotide(pNt);
                         } 
                         break;
                     case 'c':
                     case 'C':
                         {
                         Cytosine* pNt = new Cytosine;
-                        pNt->printNt();
-                        std::cout << std::endl;
+                        currentSequence.addNucleotide(pNt);
 
                         }
                         break;
@@ -389,10 +359,16 @@ if (inputFASTA.is_open())
             }
             //std::cout << std::endl;
         }
-
+    std::cout << "\nHeader: ";
+    currentHeader.printHeader();
+    std::cout << "Sequence: ";
+    currentSequence.printSeq();
+    std::cout << std::endl;
     // TODO:
-    // if line is a Sequence, iterate over it, letter by letter, and assign to corresponding subclass in vector in seqElement
-    // how do i test it? einfach annhemen, dass es nur Header/Seq. gibt? Oder != startswith (">", ";", "#")?
+    // Add Header and sequence to FASTA
+    // clean both variables
+
+
     }   
 }
 else {
