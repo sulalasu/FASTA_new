@@ -80,9 +80,6 @@ class Thymine : public Nucleotide
 {
 public:
     Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
-private:
-    const std::string m_Nt = "T";
 };
 
 
@@ -90,9 +87,6 @@ class Guanine : public Nucleotide
 {
 public:
     Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
-private:
-    const std::string m_Nt = "G";
 };
 
 
@@ -100,9 +94,6 @@ class Cytosine : public Nucleotide
 {
 public:
     Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
-
-private:
-    const std::string m_Nt = "G";
 };
 
 
