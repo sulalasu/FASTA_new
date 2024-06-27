@@ -106,6 +106,17 @@ public:
             elem->printNt();
         }
     }
+    bool isEmpty() 
+    {
+        if (m_nucleotideSequence.empty()) 
+        {
+            return(true);
+        }
+        else 
+        {
+            return(false);
+        }
+    }
 
     //setter
     void addNucleotide(Nucleotide* i_nucleotide)
@@ -141,6 +152,17 @@ public:
     {
         return m_header;
     }
+    bool isEmpty() 
+    {
+        if (m_header.empty()) 
+        {
+            return(true);
+        }
+        else 
+        {
+            return(false);
+        }
+    }
 
     //setter:
     void appendNewLine(const std::string& i_newComment)
@@ -172,25 +194,26 @@ public:
     //setter
     void addHeaderSeqPair(Header* i_header, Sequence* i_sequence)
     {
+        this->m_header = i_header;
+        this->m_sequence = i_sequence;
+    }
+    void addHeader(Header* i_header)
+    {
         m_header = i_header;
+    }
+    void addSeq(Sequence* i_sequence)
+    {
         m_sequence = i_sequence;
     }
 
     //getter
     void printFASTA() 
     {
-        for (const auto& elem : m_FASTA)
-        {
-            Header h = elem.first;
-            Sequence s = elem.second;
-
-            std::cout << "print fasta" << std::endl;
-            h.printHeader();
-            std::cout << std::endl;
-            s.printSeq();
-            std::cout << std::endl << std::endl;
-            //elem.first->printHeader() << ": " << elem.second.printSeq() << std::endl;
-        }
+        std::cout << "Fasta (Header-Sequence Pair):" << std::endl;
+        m_header->printHeader();
+        std::cout << std::endl;
+        m_sequence->printSeq();
+        std::cout << std::endl;
     }
 };
 
@@ -278,16 +301,20 @@ if (inputFASTA.is_open())
     while (getline(inputFASTA, line)) 
     {
 
-        if (line.empty()) {continue;}
+        if (line.empty()) 
+        {
+            continue;
+        }
         else if (line[0] == '>' && newHeader == true)
         // TODO: add empty sequence to mapping
         {
-            // if (!currentHeader.isEmpty() && !currentSequence.isEmpty())
-            // {
-            //     global_FASTA.addHeaderSeqPair()
-            // }
+            if (!currentHeader.isEmpty() && !currentSequence.isEmpty())
+            {
+            global_FASTA.addHeaderSeqPair(currentHeader, currentSequence);
             currentHeader.clear();
             currentSequence.clear();
+            }
+
             // std::cout << "1. Header:   " << line << std::endl;
             Header* tempHeader = new Header(line);
             //tempHeader->printHeader();
