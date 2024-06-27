@@ -38,11 +38,8 @@ public:
     
     //destructor
     virtual ~Nucleotide() {}
-    //member functions:
-    // virtual void printNt() const = 0; // const here: function does not modify member data in the class it is a part of
-    //virtual std::string returnNt() const = 0; // pure virtual function => no definition,
-    // but subclasses will have a definition
 
+    //member functions:
     void printNt() const
     {
         std::cout << m_Nt;
@@ -51,19 +48,9 @@ public:
     {
         return (m_Nt);
     };
-
-
 protected:
     Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derived classes
     // Change "protected" to "public" to allow others to instantiate A.
-
-// protected:
-//     //set m_Nt:
-//     void initNt(const std::string& i_Nt)
-//     {
-//         m_Nt = i_Nt
-//     }
-
 private:
     std::string m_Nt;
 };
@@ -104,15 +91,14 @@ public:
 class Sequence 
 {
 private:
-    std::vector<Nucleotide* > m_nucleotideSequence;
+    std::vector<Nucleotide*> m_nucleotideSequence;
+
 public:
-    //constructors:
+    //de/constructors:
     Sequence() {}
-    //destructor:
     ~Sequence() {}
 
     //getter
-    //TODO: make a member function, that prints all nucleotides
     void printSeq()
     {
         for (auto elem : m_nucleotideSequence)
@@ -131,42 +117,39 @@ public:
     {
         m_nucleotideSequence.clear();
     }
-
-
 }; 
 
 
 class Header
 {
 private:
-    //member vars
-    std::string m_comment;
+    std::string m_header;
 
 public:
     //constructor
     Header() {}
-    Header(const std::string& i_commentString) : m_comment(i_commentString) {}
+    Header(const std::string& i_header) : m_header(i_header) {}
     //destructor
     ~Header() = default;
 
     //getter:
     void printHeader() 
     {
-        std::cout << "Header: " << m_comment << "|__" << std::endl;
+        std::cout << "Header: " << m_header << "|__" << std::endl;
     }
     const std::string& getHeader() const
     {
-        return m_comment;
+        return m_header;
     }
 
     //setter:
     void appendNewLine(const std::string& i_newComment)
     {
-        m_comment = m_comment + i_newComment;
+        m_header = m_header + i_newComment;
     }
     void clear()
     {
-        m_comment = "";
+        m_header = "";
     }
 
 };
@@ -178,20 +161,35 @@ public:
 class FASTA
 {
 private:
-    std::map<Header, Sequence> m_contents;
+    Header* m_header;
+    Sequence* m_sequence;
+
 public:
     FASTA() {}
     ~FASTA() = default;
 
+
     //setter
+    void addHeaderSeqPair(Header* i_header, Sequence* i_sequence)
+    {
+        m_header = i_header;
+        m_sequence = i_sequence;
+    }
 
     //getter
     void printFASTA() 
     {
-        for (const auto& elem : m_contents)
+        for (const auto& elem : m_FASTA)
         {
-            std::cout << "TBD: print fasta" << std::endl;
-            // std::cout << elem.first << ": " << elem.second << std::endl;
+            Header h = elem.first;
+            Sequence s = elem.second;
+
+            std::cout << "print fasta" << std::endl;
+            h.printHeader();
+            std::cout << std::endl;
+            s.printSeq();
+            std::cout << std::endl << std::endl;
+            //elem.first->printHeader() << ": " << elem.second.printSeq() << std::endl;
         }
     }
 };
@@ -284,6 +282,10 @@ if (inputFASTA.is_open())
         else if (line[0] == '>' && newHeader == true)
         // TODO: add empty sequence to mapping
         {
+            // if (!currentHeader.isEmpty() && !currentSequence.isEmpty())
+            // {
+            //     global_FASTA.addHeaderSeqPair()
+            // }
             currentHeader.clear();
             currentSequence.clear();
             // std::cout << "1. Header:   " << line << std::endl;
