@@ -1,9 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <map>
 #include <string>
-#include <set>
+#include <stdlib.h>     //for using the function sleep
 
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
@@ -352,8 +351,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-//for debugging:
-// TODO: REMOVE!
+// TODO: REMOVE! (only for debugging)
 argc = 3;
 argv[1] = "input.fasta";
 argv[2] = "output.fasta";
@@ -365,41 +363,34 @@ if (argc != 3)
     return 1;
 }
 
-// declare necessary variables
-// TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
-// Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
-// Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
-// Sequence* pCurrentSequence = nullptr;
-// Header* pCurrentHeader = nullptr;
 
-FastaFile fastaFile;
-bool newHeader = true; //use bool to check if new or old header-seq pair?
 
 
 // open and read file
 std::cout << "Opening file named: " << argv[1] << std::endl;
 std::ifstream inputFasta(argv[1]);
+FastaFile fastaFile;
 
-int lineNumber = 0;
-// if successfully opened, read line by line
 if (inputFasta.is_open())
 {
     std::string line;
     std::string sequenceString;
     std::string headerString;
-    // TODO: last header/seq pair is missing!
-    // TODO: clear line and sequence and header variables
-    // then: start while loop
 
     //TODO: in 1 aus 2 verschachteltet funtionen bestehende funktion verpacken:
     // außen: while loop + if else if
     // innen: switch-case-fun
     while (getline(inputFasta, line)) 
     {
-        // line is a comment AND the first line of a Header (newHeader == true)
-        if (line[0] == '>' || inputFasta.eof()) //&& newHeader == true) 
+        //put this in front, so last line gets read as well
+        if (line[0] != '>')
         {
-            // the previous Header/Sequence are fully filled and can be appended to Fasta object
+            sequenceString += line;
+        }
+        // check eof to not have to write same code twice
+        else if (line[0] == '>' || inputFasta.eof()) 
+        {
+            // the previous Header/Sequence is fully filled and can be appended to Fasta object
             if(!headerString.empty() && !sequenceString.empty())
             {
                 Header* pHeader = new Header();
@@ -414,25 +405,12 @@ if (inputFasta.is_open())
                 headerString.clear();
 
             }
-            
             headerString += line;
         }
-
-        // line is second line of a header --> append to previous header
-        // else if (line[0] == '>' && newHeader == false)
-        // {
-        //     pCurrentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
-        // }
-
-        // line is a sequence
-        else
-        {           
-            sequenceString += line;
-        }
     }
-    lineNumber++;
+    inputFasta.close();
 }   
-    //currentFasta->print(); // --> existier hier nicht, da lokal in loop erzeugt wurde!
+
 else 
 {
     std::cout << "Couldnt open file '" << argv[1] << "'." << std::endl; 
@@ -440,9 +418,8 @@ else
 
 
 
-inputFasta.close();
 
-std::cout << "AM ende erhalten wir: " << std::endl;
+std::cout << "Result of reading File: \n\n\n" << std::endl;
 fastaFile.print();
 
 
