@@ -7,6 +7,8 @@
 
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
+#define NtLOG() std::cout << pNt->getNt() << std::endl;
+
 
 // auch member ufnctions selber sollten const gesetzt werden:
 //long getNumber() const {}
@@ -59,7 +61,7 @@ public:
     {
         std::cout << m_Nt;
     } 
-    std::string returnNt() const
+    std::string getNt() const
     {
         return (m_Nt);
     };
@@ -116,6 +118,23 @@ public:
             elem->Nucleotide::print();
         }
     }
+
+    const std::vector<Nucleotide*>& getSeq() const 
+    {
+        return m_nucleotideSequence;
+    }
+
+    const std::string getSeqString() const
+    {
+        std::string SeqString;
+
+        for (const auto& nt : m_nucleotideSequence)
+        {
+            SeqString.append(nt->getNt());
+        }
+        return (SeqString);
+    }
+
     bool isEmpty() const
     {
         if (m_nucleotideSequence.empty()) 
@@ -148,14 +167,14 @@ private:
 
 public:
     //'structors
-    Header() {} // TODO: brauche ich den default constructor?
+    Header() {} // TODO: brauche ich den default constructor? --> ja, weil ich ja zuerst
     Header(const std::string& i_header) : m_header(i_header) {}
     ~Header() = default;
 
     //getter:
     void print() const
     {
-        std::cout << "Header: " << m_header << std::endl;
+        std::cout << m_header << std::endl;
     }
 
     const std::string& getHeader() const
@@ -194,8 +213,8 @@ public:
 class FASTA
 {
 private:
-    Header* m_header;
-    Sequence* m_sequence;
+    Header* m_pHeader;
+    Sequence* m_pSequence;
 
 public:
     FASTA() {}
@@ -203,30 +222,35 @@ public:
 
 
     //setter
-    void addHeaderSeqPair(Header* i_header, Sequence* i_sequence)
+    void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
     {
-        this->m_header = i_header;
-        this->m_sequence = i_sequence;
+        this->m_pHeader = i_pHeader;
+        this->m_pSequence = i_pSequence;
     }
     // TODO: will ich wirklich einzelne header/seq hinzufügen?
-    void addHeader(Header* i_header)
+    void addHeader(Header* i_pHeader)
     {
-        m_header = i_header;
+        m_pHeader = i_pHeader;
     }
-    void addSeq(Sequence* i_sequence)
+    void addSeq(Sequence* i_pSequence)
     {
-        m_sequence = i_sequence;
+        m_pSequence = i_pSequence;
     }
 
     //getter
     void print() const
     {
         std::cout << "Fasta (Header-Sequence Pair):" << std::endl; //TODO: remove
-        m_header->print();
+        m_pHeader->print();
         std::cout << std::endl;
-        m_sequence->print();
+        m_pSequence->print();
         std::cout << std::endl;
     }
+    // TODO: add return function
+    void getFASTA() const 
+    {
+
+    } 
 };
 
 
@@ -237,6 +261,10 @@ public:
 
 int main(int argc, char* argv[])
 {
+//for debugging:
+argc = 3;
+argv[1] = "input.fasta";
+argv[2] = "output.fasta";
 
 //check for number of command line arguments
 if (argc != 3)
@@ -286,13 +314,14 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 // declare necessary variables
 std::string line;
 std::vector<Nucleotide*> nucleotideSequence;
-FASTA global_FASTA;
+Sequence* currentSequence = new Sequence(); //use to later append to mapping
+Header* currentHeader = new Header(); // use to fill/empty with current header info
+FASTA currentFASTA;
 
 bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
 //Header currentHeader; // use to later append to mapping 
-Sequence currentSequence; //use to later append to mapping
-Header currentHeader; // use to fill/empty with current header info
+
 
 // open and read file
 std::ifstream inputFASTA;
@@ -316,85 +345,101 @@ if (inputFASTA.is_open())
         {
             continue;
         }
-        else if (line[0] == '>' && newHeader == true)
-        // TODO: add empty sequence to mapping
-        {
-            if (!currentHeader.isEmpty() && !currentSequence.isEmpty())
-            {
-            global_FASTA.addHeaderSeqPair(currentHeader, currentSequence);
-            currentHeader.clear();
-            currentSequence.clear();
-            }
 
-            // std::cout << "1. Header:   " << line << std::endl;
-            Header* tempHeader = new Header(line);
-            //tempHeader->print();
-            newHeader = false;
-            //tempseq =  
-            currentHeader.append(line);
-        }
-        else if (line[0] == '>' && newHeader == false)
-        // line --> append to previous header
+        // line is a comment AND the first line of a Header (newHeader == true)
+        else if (line[0] == '>' && newHeader == true)
         {
-            currentHeader.append(line);
+            
+            // the previous Header/Sequence are fully filled and can be appended to FASTA object
+            if (!currentHeader->isEmpty() && !currentSequence->isEmpty())
+            {
+                currentFASTA.addHeaderSeqPair(currentHeader, currentSequence);
+                std::cout << "----Header: " << currentHeader->getHeader() << std::endl;
+                std::cout << "----sequence: " << std::endl;
+                currentSequence->print();
+                currentHeader->clear();
+                currentSequence->clear();
+            }
+            // start new header
+            else 
+            { 
+                currentHeader->append(line);
+                // msgLOG("NEW header...", line);
+            }
+            
+            newHeader = false; 
+            LOG("newHeader = false;");
+            continue;
         }
+
+        // line is second line of a header --> append to previous header
+        else if (line[0] == '>' && newHeader == false)
+        {
+            // msgLOG("MORE header...", line);
+            currentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
+        }
+
         else
-        // line = sequence line
+        // line is a sequence
         {
             newHeader = true;
+            // LOG("newHeader = true;");
+
 
             for (const auto& nt : line)
             {
-                //TODO: switch statement to decide between nucleotides.
+                //std::cout << "building seq: ___" << currentSequence->getSeqString() << "___" << std::endl;
+                currentSequence->print();
+                std::cout << std::endl;
                 switch (nt)
                 {
                     case 'a':
                     case 'A':
                         {
-                        Adenine* pNt = new Adenine;
-                        currentSequence.add(pNt);
-
-                        // delete pA;
-                        // wir reservieren im Heap speicher für eine instanz der klasse
-                        // adenine, unser pointer pA zeigt auf diesen speicher.
-                        //TODO: add new nucleotide instance to 'nucleotideSequence' vector
+                        Adenine* pNt = new Adenine();
+                        currentSequence->add(pNt);
+                        // NtLOG();
+                        //delete pNt;
                         }
                         break;
                     case 't':
                     case 'T':
                         {
-                        Thymine* pNt = new Thymine;
-                        currentSequence.add(pNt);
+                        Thymine* pNt = new Thymine();
+                        currentSequence->add(pNt);
+                        // NtLOG();
+                        //delete pNt;
                         } 
                         break;
 
                     case 'g':
                     case 'G':
                         {
-                        Guanine* pNt = new Guanine;
-                        currentSequence.add(pNt);
+                        Guanine* pNt = new Guanine();
+                        currentSequence->add(pNt);
+                        // NtLOG();
+                        //delete pNt;
                         } 
                         break;
                     case 'c':
                     case 'C':
                         {
-                        Cytosine* pNt = new Cytosine;
-                        currentSequence.add(pNt);
+                        Cytosine* pNt = new Cytosine();
+                        currentSequence->add(pNt);
+                        // NtLOG();
+                        //delete pNt;
 
                         }
                         break;
+
                 }
-                //nucleotideSequence.push_back()
-                //std::cout << nt << " ";
-                //nucleotideSequence.print();
             }
-            //std::cout << std::endl;
         }
-    std::cout << "\nHeader: ";
-    currentHeader.print();
-    std::cout << "Sequence: ";
-    currentSequence.print();
-    std::cout << std::endl;
+    // std::cout << "\nHeader: ";
+    // currentHeader->print();
+    // std::cout << "Sequence: ";
+    // currentSequence->print();
+    // std::cout << std::endl;
     // TODO: Add Header and sequence to FASTA, clean both variables
 
 
