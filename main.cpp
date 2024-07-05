@@ -364,15 +364,16 @@ bool newHeader = true; //use bool to check if new or old header-seq pair?
 
 
 // open and read file
-std::ifstream inputFasta;
+std::ifstream inputFasta(argv[1]);
 std::cout << argv[1] << std::endl;
-inputFasta.open(argv[1]);
 
 int lineNumber = 0;
 // if successfully opened, read line by line
 if (inputFasta.is_open())
 {
     std::string line;
+    // std::string sequenceString;
+    // std::string headerString;
     // TODO: last header/seq pair is missing!
     // TODO: clear line and sequence and header variables
     // then: start while loop
