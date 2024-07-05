@@ -100,6 +100,7 @@ public:
 
 
 //contains vector of Nucleotide Class (or derived of it).
+// TODO: add id?
 class Sequence 
 {
 private:
@@ -274,7 +275,7 @@ private:
 
 public:
     //getter
-    void print(FastaFile)
+    void print()
     {
         for (auto fasta : fastaFile)
         {
@@ -298,9 +299,9 @@ int main(int argc, char* argv[])
 {
 //for debugging:
 // TODO: REMOVE!
-// argc = 3;
-// argv[1] = "input.fasta";
-// argv[2] = "output.fasta";
+argc = 3;
+argv[1] = "input.fasta";
+argv[2] = "output.fasta";
 
 //check for number of command line arguments
 if (argc != 3)
@@ -311,53 +312,16 @@ if (argc != 3)
 std::cout << "Opening file named: " << argv[1] << std::endl;
 std::cout << "Writing to: " << argv[2] << std::endl;
 
-
-//main programn:
-
-// // open input file, store lines in vector
-// std::vector<std::string> inputFastaVector = readFastaFile(argv); //intellisense says error, but works fine.
-
-// std::vector<char> seqLetterVector; // for storing sequence of letters
-// std::vector<SequenceElement*> sequenceElements; // to store pointers to SequenceElement objects
-// bool seqContinue = true; // true as long as not encounterd header line again. (if seq is mulitple lines)
-
-// for (std::string line : inputFastaVector) 
-// {
-//     if (!line.empty() && line[0] == '>') // is Header
-//     {
-//         SequenceElement* p_SeqElem = new SequenceElement;
-//         p_SeqElem->addHeader(line);
-//         sequenceElements.push_back(p_SeqElem);
-//         seqContinue = false;
-//         std::cout << "should add line to header: " << line << std::endl;
-//         //sequenceElement.addHeader(line);
-
-//     }
-//     else
-//     {
-//         if (!line.empty())
-//         {
-//             seqContinue = true;
-//             seqLetterVector.clear(); // make sure vector is empty
-//             //TODO: ich will alle zeilen zu einer zusammenfassen, bis wieder ein '>' vorkommt udn alls ein Sequence objekt sspeichern.
-//             std::cout << "should add combine non-header lines and add to seq: " << line << std::endl;
-//             //sequenceElement.addSequence(line);
-//             //seqLetterVector.push_back(line.begin(), line.end())
-//         }
-//     }
-// }
-
 // declare necessary variables
 // TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
 std::string line;
-std::vector<Nucleotide*> nucleotideSequence;
-Sequence* currentSequence = new Sequence(); //use to later append to mapping
-Header* currentHeader = new Header(); // use to fill/empty with current header info
-Fasta* currentFasta = new Fasta();
+Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
+Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
+// Sequence* pCurrentSequence = nullptr;
+// Header* pCurrentHeader = nullptr;
+
 FastaFile fastaFile;
-bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
-//dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
-//Header currentHeader; // use to later append to mapping 
+bool newHeader = true; //use bool to check if new or old header-seq pair?
 
 
 // open and read file
@@ -365,10 +329,11 @@ std::ifstream inputFasta;
 std::cout << argv[1] << std::endl;
 inputFasta.open(argv[1]);
 
-
+int lineNumber = 0;
 // if successfully opened, read line by line
 if (inputFasta.is_open())
 {
+    // TODO: last header/seq pair is missing!
     // TODO: clear line and sequence and header variables
     // then: start while loop
 
@@ -377,6 +342,13 @@ if (inputFasta.is_open())
     // innen: switch-case-fun
     while (getline(inputFasta, line)) 
     {
+        
+        // if (lineNumber == 0) 
+        // {
+        //     Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
+        //     Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
+
+        // }
 
         if (line.empty()) 
         {
@@ -384,23 +356,31 @@ if (inputFasta.is_open())
         }
 
         // line is a comment AND the first line of a Header (newHeader == true)
-        else if (line[0] == '>' && newHeader == true)
+        else if ((line[0] == '>' && newHeader == true) || inputFasta.eof())
         {
             
             // the previous Header/Sequence are fully filled and can be appended to Fasta object
-            if (!currentHeader->isEmpty() && !currentSequence->isEmpty())
+            if (!pCurrentHeader->isEmpty() && !pCurrentSequence->isEmpty())
             {
-                currentFasta.addHeaderSeqPair(currentHeader, currentSequence);
-                //std::cout << "----Header: " << currentHeader->getHeader() << std::endl;
-                std::cout << "----------- CURRENT FASTA ------------: " << std::endl;
-                currentFasta.print();
-                currentHeader->clear();
-                currentSequence->clear();
+                // LOG("Adding header and sequence to fasta: ");
+                // msgLOG("Header", pCurrentHeader->getHeader());
+                // msgLOG("Sequen", pCurrentSequence->getSeqString());
+                Fasta* pCurrentFasta = new Fasta(pCurrentHeader, pCurrentSequence);
+                // LOG("print current sequence: ");
+                // pCurrentHeader->print();
+                fastaFile.add(pCurrentFasta);
+                LOG("print Fasta File:_____________");
+                fastaFile.print();
+                LOG("_____________________________");
+                Header* pCurrentHeader = new Header();
+                Sequence* pCurrentSequence = new Sequence();
+                // pCurrentHeader->clear();
+                // pCurrentSequence->clear();
             }
             // start new header
             else 
             { 
-                currentHeader->append(line);
+                pCurrentHeader->append(line);
             }
             
             newHeader = false; 
@@ -410,7 +390,7 @@ if (inputFasta.is_open())
         // line is second line of a header --> append to previous header
         else if (line[0] == '>' && newHeader == false)
         {
-            currentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
+            pCurrentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
         }
 
         else
@@ -426,14 +406,14 @@ if (inputFasta.is_open())
                     case 'A':
                         {
                         Adenine* pNt = new Adenine();
-                        currentSequence->add(pNt);
+                        pCurrentSequence->add(pNt);
                         }
                         break;
                     case 't':
                     case 'T':
                         {
                         Thymine* pNt = new Thymine();
-                        currentSequence->add(pNt);
+                        pCurrentSequence->add(pNt);
                         } 
                         break;
 
@@ -441,32 +421,23 @@ if (inputFasta.is_open())
                     case 'G':
                         {
                         Guanine* pNt = new Guanine();
-                        currentSequence->add(pNt);
+                        pCurrentSequence->add(pNt);
                         } 
                         break;
                     case 'c':
                     case 'C':
                         {
                         Cytosine* pNt = new Cytosine();
-                        currentSequence->add(pNt);
+                        pCurrentSequence->add(pNt);
                         }
                         break;
 
                 }
             }
         }
+    lineNumber++;
     }   
-    // std::cout << "\nHeader: ";
-    // currentHeader->print();
-    // std::cout << "Sequence: ";
-    // currentSequence->print();
-    // std::cout << std::endl;
-    // TODO: Add Header and sequence to Fasta, clean both variables
-    std::cout << "print current sequence: ";
-    currentSequence->print();
-    std::cout << std::endl;
-    currentFasta.print();
-    //fastaFile.add(currentFasta);
+    //currentFasta->print(); // --> existier hier nicht, da lokal in loop erzeugt wurde!
 
 }
 else {
@@ -477,7 +448,8 @@ else {
 
 inputFasta.close();
 
-//fastaFile.print();
+std::cout << "AM ende erhalten wir: " << std::endl;
+fastaFile.print();
 
 std::cout << "\n\nprogram out" << std::endl;
 
