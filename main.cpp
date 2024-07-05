@@ -208,7 +208,7 @@ private:
 
 public:
     //'structors
-    Header() {} // TODO: brauche ich den default constructor? --> ja, weil ich ja zuerst
+    Header() : m_header() {} // TODO: brauche ich den default constructor? --> ja, weil ich ja zuerst
     Header(const std::string& i_header) : m_header(i_header) {}
     ~Header() = default;
 
@@ -267,11 +267,11 @@ public:
       m_pSequence(i_pSequence)
     {}
 
-    // void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
-    // {
-    //     this->m_pHeader = i_pHeader;
-    //     this->m_pSequence = i_pSequence;
-    // }
+    void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
+    {
+        this->m_pHeader = i_pHeader;
+        this->m_pSequence = i_pSequence;
+    }
 
     ~Fasta() = default;
 
@@ -367,8 +367,8 @@ if (argc != 3)
 
 // declare necessary variables
 // TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
-Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
-Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
+// Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
+// Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
 // Sequence* pCurrentSequence = nullptr;
 // Header* pCurrentHeader = nullptr;
 
@@ -396,62 +396,38 @@ if (inputFasta.is_open())
     // innen: switch-case-fun
     while (getline(inputFasta, line)) 
     {
-        if (line.empty()) 
-        {
-            continue;
-        }
-
         // line is a comment AND the first line of a Header (newHeader == true)
-        else if (line[0] == '>')// && newHeader == true) || inputFasta.eof())
+        if (line[0] == '>' || inputFasta.eof()) //&& newHeader == true) 
         {
+            // the previous Header/Sequence are fully filled and can be appended to Fasta object
             if(!headerString.empty() && !sequenceString.empty())
             {
                 Header* pHeader = new Header();
                 Sequence* pSequence = new Sequence();
                 Fasta* pFasta = new Fasta();
 
+                pHeader->append(headerString);
                 pSequence->parseStringToSequence(sequenceString);
+                pFasta->addHeaderSeqPair(pHeader, pSequence);
+                fastaFile.add(pFasta);
+                sequenceString.clear();
+                headerString.clear();
+
             }
             
-            // the previous Header/Sequence are fully filled and can be appended to Fasta object
-            if (!pCurrentHeader->isEmpty() && !pCurrentSequence->isEmpty())
-            {
-                // LOG("Adding header and sequence to fasta: ");
-                // msgLOG("Header", pCurrentHeader->getHeader());
-                // msgLOG("Sequen", pCurrentSequence->getSeqString());
-                Fasta* pCurrentFasta = new Fasta(pCurrentHeader, pCurrentSequence);
-                // LOG("print current sequence: ");
-                // pCurrentHeader->print();
-                fastaFile.add(pCurrentFasta);
-                LOG("print Fasta File:_____________");
-                fastaFile.print();
-                LOG("_____________________________");
-                Header* pCurrentHeader = new Header();
-                Sequence* pCurrentSequence = new Sequence();
-                // pCurrentHeader->clear();
-                // pCurrentSequence->clear();
-            }
-            // start new header
-            else 
-            { 
-                pCurrentHeader->append(line);
-            }
-            
-            newHeader = false; 
-            continue;
+            headerString += line;
         }
 
         // line is second line of a header --> append to previous header
-        else if (line[0] == '>' && newHeader == false)
-        {
-            pCurrentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
-        }
+        // else if (line[0] == '>' && newHeader == false)
+        // {
+        //     pCurrentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
+        // }
 
-        else
         // line is a sequence
-        {
-            newHeader = true;
-            //pCurrentSequence->parseStringToSequence(line);
+        else
+        {           
+            sequenceString += line;
         }
     }
     lineNumber++;
