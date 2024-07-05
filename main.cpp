@@ -159,7 +159,7 @@ public:
         m_nucleotideSequence.clear();
     }
 
-    void parseStringToSequence(Sequence* pCurrentSequence, const std::string& i_line) 
+    void parseStringToSequence(const std::string& i_line) 
     {
         for (const auto& nt : i_line)
         {
@@ -169,14 +169,14 @@ public:
             case 'A':
                 {
                 Adenine* pNt = new Adenine();
-                pCurrentSequence->add(pNt);
+                Sequence::add(pNt);
                 }
                 break;
             case 't':
             case 'T':
                 {
                 Thymine* pNt = new Thymine();
-                pCurrentSequence->add(pNt);
+                Sequence::add(pNt);
                 } 
                 break;
 
@@ -184,14 +184,14 @@ public:
             case 'G':
                 {
                 Guanine* pNt = new Guanine();
-                pCurrentSequence->add(pNt);
+                Sequence::add(pNt);
                 } 
                 break;
             case 'c':
             case 'C':
                 {
                 Cytosine* pNt = new Cytosine();
-                pCurrentSequence->add(pNt);
+                Sequence::add(pNt);
                 }
                 break;
 
@@ -258,7 +258,10 @@ private:
     Sequence* m_pSequence;
 
 public:
-    Fasta() = delete;
+    Fasta() 
+    : m_pHeader(nullptr),
+      m_pSequence(nullptr)
+    {}
     Fasta(Header* i_pHeader, Sequence* i_pSequence)
     : m_pHeader(i_pHeader),
       m_pSequence(i_pSequence)
@@ -298,11 +301,17 @@ public:
         m_pSequence->print();
         std::cout << std::endl;
     }
-    // TODO: add return function
-    void getFasta() const 
+    
+    Header* getHeader() const 
     {
-
+        return (m_pHeader);
+        // TODO: add return function
     } 
+
+    Sequence* getSequence() const
+    {
+        return (m_pSequence);
+    }
 };
 
 class FastaFile
@@ -314,6 +323,12 @@ private:
     std::vector<Fasta*> fastaFile;
 
 public:
+    // member function
+    void write()
+    {
+        //TODO: write to file
+    }
+
     //getter
     void print()
     {
@@ -349,8 +364,6 @@ if (argc != 3)
     std::cout << "ERROR: Please supply exactly two arguments: Input Filename and Output filename" << std::endl;
     return 1;
 }
-std::cout << "Opening file named: " << argv[1] << std::endl;
-std::cout << "Writing to: " << argv[2] << std::endl;
 
 // declare necessary variables
 // TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
@@ -364,16 +377,16 @@ bool newHeader = true; //use bool to check if new or old header-seq pair?
 
 
 // open and read file
+std::cout << "Opening file named: " << argv[1] << std::endl;
 std::ifstream inputFasta(argv[1]);
-std::cout << argv[1] << std::endl;
 
 int lineNumber = 0;
 // if successfully opened, read line by line
 if (inputFasta.is_open())
 {
     std::string line;
-    // std::string sequenceString;
-    // std::string headerString;
+    std::string sequenceString;
+    std::string headerString;
     // TODO: last header/seq pair is missing!
     // TODO: clear line and sequence and header variables
     // then: start while loop
@@ -383,22 +396,22 @@ if (inputFasta.is_open())
     // innen: switch-case-fun
     while (getline(inputFasta, line)) 
     {
-        
-        // if (lineNumber == 0) 
-        // {
-        //     Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
-        //     Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
-
-        // }
-
         if (line.empty()) 
         {
             continue;
         }
 
         // line is a comment AND the first line of a Header (newHeader == true)
-        else if ((line[0] == '>' && newHeader == true) || inputFasta.eof())
+        else if (line[0] == '>')// && newHeader == true) || inputFasta.eof())
         {
+            if(!headerString.empty() && !sequenceString.empty())
+            {
+                Header* pHeader = new Header();
+                Sequence* pSequence = new Sequence();
+                Fasta* pFasta = new Fasta();
+
+                pSequence->parseStringToSequence(sequenceString);
+            }
             
             // the previous Header/Sequence are fully filled and can be appended to Fasta object
             if (!pCurrentHeader->isEmpty() && !pCurrentSequence->isEmpty())
@@ -438,7 +451,7 @@ if (inputFasta.is_open())
         // line is a sequence
         {
             newHeader = true;
-            pCurrentSequence->parseStringToSequence(pCurrentSequence, line);
+            //pCurrentSequence->parseStringToSequence(line);
         }
     }
     lineNumber++;
@@ -456,6 +469,9 @@ inputFasta.close();
 std::cout << "AM ende erhalten wir: " << std::endl;
 fastaFile.print();
 
+
+std::cout << "Writing to: " << argv[2] << std::endl;
+// fastaFile.write();
 std::cout << "\n\nprogram out" << std::endl;
 
 return 0;
