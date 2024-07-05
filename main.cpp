@@ -8,6 +8,14 @@
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
 
+// auch member ufnctions selber sollten const gesetzt werden:
+//long getNumber() const {}
+
+// getter als const std:type& getXXX() const {return m_XXXX}
+// das heißt als const ref übergeben (außer triviale datentypen)
+
+// im .cpp file (definitionen) immer Klasse::Klasse oder Klasse::Klassenfunktion 
+
 // TODO: Big todos:
 // make child class of ACTG of base class nucleotide
 // find out, how to add new nucleotide class to sequence vector
@@ -99,14 +107,14 @@ public:
     ~Sequence() {}
 
     //getter
-    void printSeq()
+    void printSeq() const
     {
         for (auto elem : m_nucleotideSequence)
         {
             elem->printNt();
         }
     }
-    bool isEmpty() 
+    bool isEmpty() const
     {
         if (m_nucleotideSequence.empty()) 
         {
@@ -144,7 +152,7 @@ public:
     ~Header() = default;
 
     //getter:
-    void printHeader() 
+    void printHeader() const
     {
         std::cout << "Header: " << m_header << "|__" << std::endl;
     }
@@ -152,7 +160,7 @@ public:
     {
         return m_header;
     }
-    bool isEmpty() 
+    bool isEmpty() const
     {
         if (m_header.empty()) 
         {
@@ -207,7 +215,7 @@ public:
     }
 
     //getter
-    void printFASTA() 
+    void printFASTA() const
     {
         std::cout << "Fasta (Header-Sequence Pair):" << std::endl;
         m_header->printHeader();
