@@ -217,25 +217,36 @@ private:
     Sequence* m_pSequence;
 
 public:
-    Fasta() {}
+    Fasta() = delete;
+    Fasta(Header* i_pHeader, Sequence* i_pSequence)
+    : m_pHeader(i_pHeader),
+      m_pSequence(i_pSequence)
+    {}
+
+    // void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
+    // {
+    //     this->m_pHeader = i_pHeader;
+    //     this->m_pSequence = i_pSequence;
+    // }
+
     ~Fasta() = default;
 
 
     //setter
-    void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
-    {
-        this->m_pHeader = i_pHeader;
-        this->m_pSequence = i_pSequence;
-    }
-    // TODO: will ich wirklich einzelne header/seq hinzufügen?
-    void addHeader(Header* i_pHeader)
-    {
-        m_pHeader = i_pHeader;
-    }
-    void addSeq(Sequence* i_pSequence) //input kann nicht const sein.
-    {
-        m_pSequence = i_pSequence;
-    }
+    // void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
+    // {
+    //     this->m_pHeader = i_pHeader;
+    //     this->m_pSequence = i_pSequence;
+    // }
+    // // TODO: will ich wirklich einzelne header/seq hinzufügen?
+    // void addHeader(Header* i_pHeader)
+    // {
+    //     m_pHeader = i_pHeader;
+    // }
+    // void addSeq(Sequence* i_pSequence) //input kann nicht const sein.
+    // {
+    //     m_pSequence = i_pSequence;
+    // }
 
     //getter
     void print() const
@@ -337,11 +348,12 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 // }
 
 // declare necessary variables
+// TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
 std::string line;
 std::vector<Nucleotide*> nucleotideSequence;
 Sequence* currentSequence = new Sequence(); //use to later append to mapping
 Header* currentHeader = new Header(); // use to fill/empty with current header info
-Fasta currentFasta;
+Fasta* currentFasta = new Fasta();
 FastaFile fastaFile;
 bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
