@@ -40,6 +40,13 @@
 
 class Nucleotide 
 {
+private:
+    std::string m_Nt;
+
+protected:
+    Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derived classes
+    // Change "protected" to "public" to allow others to instantiate A.
+
 public:
     //constructor
     Nucleotide() {}
@@ -48,7 +55,7 @@ public:
     virtual ~Nucleotide() {}
 
     //member functions:
-    void printNt() const
+    void print() const
     {
         std::cout << m_Nt;
     } 
@@ -56,11 +63,6 @@ public:
     {
         return (m_Nt);
     };
-protected:
-    Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derived classes
-    // Change "protected" to "public" to allow others to instantiate A.
-private:
-    std::string m_Nt;
 };
 
 
@@ -107,11 +109,11 @@ public:
     ~Sequence() {}
 
     //getter
-    void printSeq() const
+    void print() const
     {
         for (auto elem : m_nucleotideSequence)
         {
-            elem->printNt();
+            elem->Nucleotide::print();
         }
     }
     bool isEmpty() const
@@ -127,9 +129,9 @@ public:
     }
 
     //setter
-    void addNucleotide(Nucleotide* i_nucleotide)
+    void add(Nucleotide* i_pNucleotide)
     {
-        m_nucleotideSequence.push_back(i_nucleotide);
+        m_nucleotideSequence.push_back(i_pNucleotide);
     }
 
     void clear() 
@@ -145,21 +147,22 @@ private:
     std::string m_header;
 
 public:
-    //constructor
-    Header() {}
+    //'structors
+    Header() {} // TODO: brauche ich den default constructor?
     Header(const std::string& i_header) : m_header(i_header) {}
-    //destructor
     ~Header() = default;
 
     //getter:
-    void printHeader() const
+    void print() const
     {
-        std::cout << "Header: " << m_header << "|__" << std::endl;
+        std::cout << "Header: " << m_header << std::endl;
     }
+
     const std::string& getHeader() const
     {
         return m_header;
     }
+
     bool isEmpty() const
     {
         if (m_header.empty()) 
@@ -173,7 +176,7 @@ public:
     }
 
     //setter:
-    void appendNewLine(const std::string& i_newComment)
+    void append(const std::string& i_newComment)
     {
         m_header = m_header + i_newComment;
     }
@@ -205,6 +208,7 @@ public:
         this->m_header = i_header;
         this->m_sequence = i_sequence;
     }
+    // TODO: will ich wirklich einzelne header/seq hinzufügen?
     void addHeader(Header* i_header)
     {
         m_header = i_header;
@@ -215,12 +219,12 @@ public:
     }
 
     //getter
-    void printFASTA() const
+    void print() const
     {
-        std::cout << "Fasta (Header-Sequence Pair):" << std::endl;
-        m_header->printHeader();
+        std::cout << "Fasta (Header-Sequence Pair):" << std::endl; //TODO: remove
+        m_header->print();
         std::cout << std::endl;
-        m_sequence->printSeq();
+        m_sequence->print();
         std::cout << std::endl;
     }
 };
@@ -299,8 +303,7 @@ inputFASTA.open(argv[1]);
 // if successfully opened, read line by line
 if (inputFASTA.is_open())
 {
-    // TODO:
-    // clear line and sequence and header variables
+    // TODO: clear line and sequence and header variables
     // then: start while loop
 
     //TODO: in 1 aus 2 verschachteltet funtionen bestehende funktion verpacken:
@@ -325,15 +328,15 @@ if (inputFASTA.is_open())
 
             // std::cout << "1. Header:   " << line << std::endl;
             Header* tempHeader = new Header(line);
-            //tempHeader->printHeader();
+            //tempHeader->print();
             newHeader = false;
             //tempseq =  
-            currentHeader.appendNewLine(line);
+            currentHeader.append(line);
         }
         else if (line[0] == '>' && newHeader == false)
         // line --> append to previous header
         {
-            currentHeader.appendNewLine(line);
+            currentHeader.append(line);
         }
         else
         // line = sequence line
@@ -349,7 +352,7 @@ if (inputFASTA.is_open())
                     case 'A':
                         {
                         Adenine* pNt = new Adenine;
-                        currentSequence.addNucleotide(pNt);
+                        currentSequence.add(pNt);
 
                         // delete pA;
                         // wir reservieren im Heap speicher für eine instanz der klasse
@@ -361,7 +364,7 @@ if (inputFASTA.is_open())
                     case 'T':
                         {
                         Thymine* pNt = new Thymine;
-                        currentSequence.addNucleotide(pNt);
+                        currentSequence.add(pNt);
                         } 
                         break;
 
@@ -369,32 +372,30 @@ if (inputFASTA.is_open())
                     case 'G':
                         {
                         Guanine* pNt = new Guanine;
-                        currentSequence.addNucleotide(pNt);
+                        currentSequence.add(pNt);
                         } 
                         break;
                     case 'c':
                     case 'C':
                         {
                         Cytosine* pNt = new Cytosine;
-                        currentSequence.addNucleotide(pNt);
+                        currentSequence.add(pNt);
 
                         }
                         break;
                 }
                 //nucleotideSequence.push_back()
                 //std::cout << nt << " ";
-                //nucleotideSequence.printSeq();
+                //nucleotideSequence.print();
             }
             //std::cout << std::endl;
         }
     std::cout << "\nHeader: ";
-    currentHeader.printHeader();
+    currentHeader.print();
     std::cout << "Sequence: ";
-    currentSequence.printSeq();
+    currentSequence.print();
     std::cout << std::endl;
-    // TODO:
-    // Add Header and sequence to FASTA
-    // clean both variables
+    // TODO: Add Header and sequence to FASTA, clean both variables
 
 
     }   
