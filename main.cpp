@@ -158,6 +158,46 @@ public:
     {
         m_nucleotideSequence.clear();
     }
+
+    void parseStringToSequence(Sequence* pCurrentSequence, const std::string& i_line) 
+    {
+        for (const auto& nt : i_line)
+        {
+        switch (nt)
+        {
+            case 'a':
+            case 'A':
+                {
+                Adenine* pNt = new Adenine();
+                pCurrentSequence->add(pNt);
+                }
+                break;
+            case 't':
+            case 'T':
+                {
+                Thymine* pNt = new Thymine();
+                pCurrentSequence->add(pNt);
+                } 
+                break;
+
+            case 'g':
+            case 'G':
+                {
+                Guanine* pNt = new Guanine();
+                pCurrentSequence->add(pNt);
+                } 
+                break;
+            case 'c':
+            case 'C':
+                {
+                Cytosine* pNt = new Cytosine();
+                pCurrentSequence->add(pNt);
+                }
+                break;
+
+        }
+    }
+    }
 }; 
 
 
@@ -314,7 +354,6 @@ std::cout << "Writing to: " << argv[2] << std::endl;
 
 // declare necessary variables
 // TODO: cann ich die ganzen 'new' eventuell in die loop bringen und mir damit das clear sparen?
-std::string line;
 Sequence* pCurrentSequence = new Sequence(); //use to later append to mapping
 Header* pCurrentHeader = new Header(); // use to fill/empty with current header info
 // Sequence* pCurrentSequence = nullptr;
@@ -333,6 +372,7 @@ int lineNumber = 0;
 // if successfully opened, read line by line
 if (inputFasta.is_open())
 {
+    std::string line;
     // TODO: last header/seq pair is missing!
     // TODO: clear line and sequence and header variables
     // then: start while loop
@@ -397,50 +437,14 @@ if (inputFasta.is_open())
         // line is a sequence
         {
             newHeader = true;
-
-            for (const auto& nt : line)
-            {
-                switch (nt)
-                {
-                    case 'a':
-                    case 'A':
-                        {
-                        Adenine* pNt = new Adenine();
-                        pCurrentSequence->add(pNt);
-                        }
-                        break;
-                    case 't':
-                    case 'T':
-                        {
-                        Thymine* pNt = new Thymine();
-                        pCurrentSequence->add(pNt);
-                        } 
-                        break;
-
-                    case 'g':
-                    case 'G':
-                        {
-                        Guanine* pNt = new Guanine();
-                        pCurrentSequence->add(pNt);
-                        } 
-                        break;
-                    case 'c':
-                    case 'C':
-                        {
-                        Cytosine* pNt = new Cytosine();
-                        pCurrentSequence->add(pNt);
-                        }
-                        break;
-
-                }
-            }
+            pCurrentSequence->parseStringToSequence(pCurrentSequence, line);
         }
+    }
     lineNumber++;
-    }   
+}   
     //currentFasta->print(); // --> existier hier nicht, da lokal in loop erzeugt wurde!
-
-}
-else {
+else 
+{
     std::cout << "Couldnt open file '" << argv[1] << "'." << std::endl; 
 }
 
