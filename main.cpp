@@ -207,18 +207,18 @@ public:
 };
 
 
-// Final Class Object: FASTA class to save and output the contents.
+// Final Class Object: Fasta class to save and output the contents.
 // Contains a vector of alternating Header and Sequence.
 // Sequences are made up of individual instances of Nucleotide class.
-class FASTA
+class Fasta
 {
 private:
     Header* m_pHeader;
     Sequence* m_pSequence;
 
 public:
-    FASTA() {}
-    ~FASTA() = default;
+    Fasta() {}
+    ~Fasta() = default;
 
 
     //setter
@@ -232,7 +232,7 @@ public:
     {
         m_pHeader = i_pHeader;
     }
-    void addSeq(Sequence* i_pSequence)
+    void addSeq(Sequence* i_pSequence) //input kann nicht const sein.
     {
         m_pSequence = i_pSequence;
     }
@@ -247,13 +247,37 @@ public:
         std::cout << std::endl;
     }
     // TODO: add return function
-    void getFASTA() const 
+    void getFasta() const 
     {
 
     } 
 };
 
+class FastaFile
+// a vector containing a sequence of Fasta files,
+// which each contains a Header and a Sequence class object.
+// Sequence class contains a Sequence of Nucleotide objects.
+{
+private:
+    std::vector<Fasta*> fastaFile;
 
+public:
+    //getter
+    void print(FastaFile)
+    {
+        for (auto fasta : fastaFile)
+        {
+            fasta->print();
+            std::cout << std::endl;
+        }
+    }
+
+    //setter
+    void add(Fasta* i_pFasta)
+    {
+        fastaFile.push_back(i_pFasta);
+    }
+};
 
 //========================================================================  
 //                    ---- M A I N ---- 
@@ -262,9 +286,10 @@ public:
 int main(int argc, char* argv[])
 {
 //for debugging:
-argc = 3;
-argv[1] = "input.fasta";
-argv[2] = "output.fasta";
+// TODO: REMOVE!
+// argc = 3;
+// argv[1] = "input.fasta";
+// argv[2] = "output.fasta";
 
 //check for number of command line arguments
 if (argc != 3)
@@ -316,21 +341,21 @@ std::string line;
 std::vector<Nucleotide*> nucleotideSequence;
 Sequence* currentSequence = new Sequence(); //use to later append to mapping
 Header* currentHeader = new Header(); // use to fill/empty with current header info
-FASTA currentFASTA;
-
+Fasta currentFasta;
+FastaFile fastaFile;
 bool newHeader = true; //maybe use bool to check if new or old header-seq pair?
 //dürfen keine pointer sein, weil sie ja auf line zeigen und diese sich immer verändert! (denke ich)
 //Header currentHeader; // use to later append to mapping 
 
 
 // open and read file
-std::ifstream inputFASTA;
+std::ifstream inputFasta;
 std::cout << argv[1] << std::endl;
-inputFASTA.open(argv[1]);
+inputFasta.open(argv[1]);
 
 
 // if successfully opened, read line by line
-if (inputFASTA.is_open())
+if (inputFasta.is_open())
 {
     // TODO: clear line and sequence and header variables
     // then: start while loop
@@ -338,7 +363,7 @@ if (inputFASTA.is_open())
     //TODO: in 1 aus 2 verschachteltet funtionen bestehende funktion verpacken:
     // außen: while loop + if else if
     // innen: switch-case-fun
-    while (getline(inputFASTA, line)) 
+    while (getline(inputFasta, line)) 
     {
 
         if (line.empty()) 
@@ -350,13 +375,13 @@ if (inputFASTA.is_open())
         else if (line[0] == '>' && newHeader == true)
         {
             
-            // the previous Header/Sequence are fully filled and can be appended to FASTA object
+            // the previous Header/Sequence are fully filled and can be appended to Fasta object
             if (!currentHeader->isEmpty() && !currentSequence->isEmpty())
             {
-                currentFASTA.addHeaderSeqPair(currentHeader, currentSequence);
-                std::cout << "----Header: " << currentHeader->getHeader() << std::endl;
-                std::cout << "----sequence: " << std::endl;
-                currentSequence->print();
+                currentFasta.addHeaderSeqPair(currentHeader, currentSequence);
+                //std::cout << "----Header: " << currentHeader->getHeader() << std::endl;
+                std::cout << "----------- CURRENT FASTA ------------: " << std::endl;
+                currentFasta.print();
                 currentHeader->clear();
                 currentSequence->clear();
             }
@@ -364,18 +389,15 @@ if (inputFASTA.is_open())
             else 
             { 
                 currentHeader->append(line);
-                // msgLOG("NEW header...", line);
             }
             
             newHeader = false; 
-            LOG("newHeader = false;");
             continue;
         }
 
         // line is second line of a header --> append to previous header
         else if (line[0] == '>' && newHeader == false)
         {
-            // msgLOG("MORE header...", line);
             currentHeader->append(line.substr(1)); // removes ">" from beginning of second header line
         }
 
@@ -383,14 +405,9 @@ if (inputFASTA.is_open())
         // line is a sequence
         {
             newHeader = true;
-            // LOG("newHeader = true;");
-
 
             for (const auto& nt : line)
             {
-                //std::cout << "building seq: ___" << currentSequence->getSeqString() << "___" << std::endl;
-                currentSequence->print();
-                std::cout << std::endl;
                 switch (nt)
                 {
                     case 'a':
@@ -398,8 +415,6 @@ if (inputFASTA.is_open())
                         {
                         Adenine* pNt = new Adenine();
                         currentSequence->add(pNt);
-                        // NtLOG();
-                        //delete pNt;
                         }
                         break;
                     case 't':
@@ -407,8 +422,6 @@ if (inputFASTA.is_open())
                         {
                         Thymine* pNt = new Thymine();
                         currentSequence->add(pNt);
-                        // NtLOG();
-                        //delete pNt;
                         } 
                         break;
 
@@ -417,8 +430,6 @@ if (inputFASTA.is_open())
                         {
                         Guanine* pNt = new Guanine();
                         currentSequence->add(pNt);
-                        // NtLOG();
-                        //delete pNt;
                         } 
                         break;
                     case 'c':
@@ -426,32 +437,35 @@ if (inputFASTA.is_open())
                         {
                         Cytosine* pNt = new Cytosine();
                         currentSequence->add(pNt);
-                        // NtLOG();
-                        //delete pNt;
-
                         }
                         break;
 
                 }
             }
         }
+    }   
     // std::cout << "\nHeader: ";
     // currentHeader->print();
     // std::cout << "Sequence: ";
     // currentSequence->print();
     // std::cout << std::endl;
-    // TODO: Add Header and sequence to FASTA, clean both variables
+    // TODO: Add Header and sequence to Fasta, clean both variables
+    std::cout << "print current sequence: ";
+    currentSequence->print();
+    std::cout << std::endl;
+    currentFasta.print();
+    //fastaFile.add(currentFasta);
 
-
-    }   
 }
 else {
     std::cout << "Couldnt open file '" << argv[1] << "'." << std::endl; 
 }
 
-inputFASTA.close();
 
 
+inputFasta.close();
+
+//fastaFile.print();
 
 std::cout << "\n\nprogram out" << std::endl;
 
