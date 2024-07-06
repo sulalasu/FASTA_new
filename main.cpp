@@ -9,30 +9,70 @@
 #define NtLOG() std::cout << pNt->getNt() << std::endl;
 
 
-// auch member ufnctions selber sollten const gesetzt werden:
-//long getNumber() const {}
-
-// getter als const std:type& getXXX() const {return m_XXXX}
-// das heißt als const ref übergeben (außer triviale datentypen)
-
-// im .cpp file (definitionen) immer Klasse::Klasse oder Klasse::Klassenfunktion 
-
-// TODO: Big todos:
-// make child class of ACTG of base class nucleotide
-// find out, how to add new nucleotide class to sequence vector
-// how to make sure, right header is mapped to right sequence
-// clean up main by converting code parts to functions
-// add destructors 
-// put classes into .c und .h files.
-
-//switch case: add breaks
-// then: try to change ACGT classes so that they are all derived from base
-// (meaning, they dont have classes, but use base functions and member vars)
-
 //========================================================================  
 //                    helper functions 
 //========================================================================  
 
+
+class PrettyPrint
+{
+private:
+    std::string m_message;
+    std::string m_highlight;
+    char m_lineChar;
+    int m_totalwidth;
+    int m_msgSpacing;
+    int m_highlightSpacing;
+
+    int totalWidth(const int i_totalWidth)
+    {
+        if (m_message.length() > i_totalWidth) 
+        {
+            return ( m_message.length() + 2 );
+        }
+        else 
+        {
+            return (m_totalwidth = i_totalWidth);
+        }
+    }
+    
+    int spacingMessage()
+    { 
+        return ((m_totalwidth-m_message.length()) / 2);
+    }
+
+    int spacingHighlight()
+    { 
+        return ((m_totalwidth-m_highlight.length()) / 2);
+    }
+public:
+    // structor
+    PrettyPrint() = delete;
+    PrettyPrint(const std::string& i_highlight, const std::string& i_message = "", 
+                char i_lineChar = '=', int i_totalwidth = 60) 
+    : m_message(i_message),
+      m_highlight(i_highlight),
+      m_lineChar(i_lineChar),
+      m_totalwidth(totalWidth(i_totalwidth)),
+      m_msgSpacing(spacingMessage()),
+      m_highlightSpacing(spacingHighlight())
+    {};
+    ~PrettyPrint() = default;
+
+
+    void consoleOut() const
+    {
+        std::cout << "\n" 
+        << std::string(m_msgSpacing, ' ')
+        << m_message << "\n"
+        << std::string(m_totalwidth, '=')
+        << "\n" 
+        << std::string(m_highlightSpacing, ' ')
+        << m_highlight << "\n"
+        << std::string(m_totalwidth, '=')
+        << std::endl;    
+    }
+};
 
 
 //========================================================================  
@@ -99,7 +139,6 @@ public:
 
 
 //contains vector of Nucleotide Class (or derived of it).
-// TODO: add id?
 class Sequence 
 {
 private:
@@ -107,10 +146,12 @@ private:
 
 public:
     //de/constructors:
+
     Sequence() {}
     ~Sequence() {}
 
     //getter
+
     void print() const
     {
         for (auto elem : m_nucleotideSequence)
@@ -124,7 +165,7 @@ public:
         return m_nucleotideSequence;
     }
 
-    const std::string getSeqString() const
+    std::string getSeqString() const
     {
         std::string SeqString;
 
@@ -148,6 +189,7 @@ public:
     }
 
     //setter
+
     void add(Nucleotide* i_pNucleotide)
     {
         m_nucleotideSequence.push_back(i_pNucleotide);
@@ -158,6 +200,10 @@ public:
         m_nucleotideSequence.clear();
     }
 
+    /*
+    Input: string of a sequence.
+    String gets parsed and corresponding nucleotides added vector of Nucleotides
+    */
     void parseStringToSequence(const std::string& i_line) 
     {
         for (const auto& nt : i_line)
@@ -199,7 +245,9 @@ public:
     }
 }; 
 
-
+/*
+contains a string with the header info
+*/
 class Header
 {
 private:
@@ -207,11 +255,13 @@ private:
 
 public:
     //'structors
-    Header() : m_header() {} // TODO: brauche ich den default constructor? --> ja, weil ich ja zuerst
+
+    Header() : m_header() {}
     Header(const std::string& i_header) : m_header(i_header) {}
     ~Header() = default;
 
     //getter:
+
     void print() const
     {
         std::cout << m_header << std::endl;
@@ -235,6 +285,7 @@ public:
     }
 
     //setter:
+
     void append(const std::string& i_newComment)
     {
         m_header = m_header + i_newComment;
@@ -247,9 +298,11 @@ public:
 };
 
 
-// Final Class Object: Fasta class to save and output the contents.
-// Contains a vector of alternating Header and Sequence.
-// Sequences are made up of individual instances of Nucleotide class.
+/* 
+Final Class Object: Fasta class to save and output the contents.
+Contains a vector of alternating Header and Sequence.
+Sequences are made up of individual instances of Nucleotide class.
+*/
 class Fasta
 {
 private:
@@ -265,6 +318,9 @@ public:
     : m_pHeader(i_pHeader),
       m_pSequence(i_pSequence)
     {}
+    ~Fasta() = default;
+
+    // setter
 
     void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
     {
@@ -272,78 +328,105 @@ public:
         this->m_pSequence = i_pSequence;
     }
 
-    ~Fasta() = default;
-
-
-    //setter
-    // void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
-    // {
-    //     this->m_pHeader = i_pHeader;
-    //     this->m_pSequence = i_pSequence;
-    // }
-    // // TODO: will ich wirklich einzelne header/seq hinzufügen?
-    // void addHeader(Header* i_pHeader)
-    // {
-    //     m_pHeader = i_pHeader;
-    // }
-    // void addSeq(Sequence* i_pSequence) //input kann nicht const sein.
-    // {
-    //     m_pSequence = i_pSequence;
-    // }
-
     //getter
+
     void print() const
     {
-        std::cout << "Fasta (Header-Sequence Pair):" << std::endl; //TODO: remove
         m_pHeader->print();
         std::cout << std::endl;
         m_pSequence->print();
         std::cout << std::endl;
     }
     
-    Header* getHeader() const 
+    const std::string getHeader() const 
     {
-        return (m_pHeader);
+        return (m_pHeader->getHeader());
         // TODO: add return function
     } 
 
-    Sequence* getSequence() const
+    std::string getSequence() const
     {
-        return (m_pSequence);
+        return (m_pSequence->getSeqString());
     }
 };
 
+/* 
+a vector containing a sequence of Fasta files,
+which each contains a Header and a Sequence class object.
+Sequence class contains a Sequence of Nucleotide objects.
+*/
 class FastaFile
-// a vector containing a sequence of Fasta files,
-// which each contains a Header and a Sequence class object.
-// Sequence class contains a Sequence of Nucleotide objects.
 {
 private:
-    std::vector<Fasta*> fastaFile;
+    std::vector<Fasta*> m_fastaFile;
+
 
 public:
-    // member function
-    void write()
+    // count number of Nucleotides in Sequence
+    std::string collectSequences() const
     {
-        //TODO: write to file
+        std::vector<std::string> p_SeqVector;
+
+        for (auto* fasta : m_fastaFile)
+        {
+            p_SeqVector.push_back(fasta->getSequence());
+        }
+
+        for (auto elem : p_SeqVector)
+        {
+            LOG(elem);
+        }
     }
 
+    int count(const std::string& seq) const
+    {
+        //TODO: add count of occurences in collected sequence
+    }
+
+    void drawHistogram()
+    {
+        //TODO: draw histogram
+    }
+    // member function
+    void write(const std::string& fileName) const
+    {       
+        std::ofstream outputFile;
+        outputFile.open(fileName);
+        for (auto elem : m_fastaFile)
+        {
+            outputFile << elem->getHeader();
+            outputFile << std::endl;
+            outputFile << elem->getSequence();
+            outputFile << std::endl;
+
+        }
+        outputFile.close();
+    }
+
+
+
     //getter
+
     void print()
     {
-        for (auto fasta : fastaFile)
+        for (auto fasta : m_fastaFile)
         {
             fasta->print();
             std::cout << std::endl;
         }
     }
 
+
+
     //setter
+    
     void add(Fasta* i_pFasta)
     {
-        fastaFile.push_back(i_pFasta);
+        m_fastaFile.push_back(i_pFasta);
     }
 };
+
+
 
 //========================================================================  
 //                    ---- M A I N ---- 
@@ -351,7 +434,6 @@ public:
 
 int main(int argc, char* argv[])
 {
-// TODO: REMOVE! (only for debugging)
 argc = 3;
 argv[1] = "input.fasta";
 argv[2] = "output.fasta";
@@ -364,31 +446,29 @@ if (argc != 3)
 }
 
 
-
-
+PrettyPrint openingMsg(argv[1], "Trying to open file named");
+openingMsg.consoleOut();
 // open and read file
-std::cout << "Opening file named: " << argv[1] << std::endl;
-std::ifstream inputFasta(argv[1]);
+
+std::ifstream inputFile(argv[1]);
 FastaFile fastaFile;
 
-if (inputFasta.is_open())
+if (inputFile.is_open())
 {
     std::string line;
     std::string sequenceString;
     std::string headerString;
 
-    //TODO: in 1 aus 2 verschachteltet funtionen bestehende funktion verpacken:
-    // außen: while loop + if else if
-    // innen: switch-case-fun
-    while (getline(inputFasta, line)) 
+    while (getline(inputFile, line)) 
     {
         //put this in front, so last line gets read as well
         if (line[0] != '>')
         {
             sequenceString += line;
         }
-        // check eof to not have to write same code twice
-        else if (line[0] == '>' || inputFasta.eof()) 
+
+        // separate IF to catch last line; check eof to not have to write same code twice (for appending last seq/header)
+        if (line[0] == '>' || inputFile.eof() == true) 
         {
             // the previous Header/Sequence is fully filled and can be appended to Fasta object
             if(!headerString.empty() && !sequenceString.empty())
@@ -405,26 +485,42 @@ if (inputFasta.is_open())
                 headerString.clear();
 
             }
-            headerString += line;
+            
+            // to remove '>' if two consecutive header lines in input
+            if (!headerString.empty() == true) 
+            {
+                headerString += line.substr(1);
+            }
+            // normal header line
+            else 
+            { 
+                headerString = line; 
+            }
         }
     }
-    inputFasta.close();
-}   
+inputFile.close();
+}
+//}   
 
 else 
 {
     std::cout << "Couldnt open file '" << argv[1] << "'." << std::endl; 
+    return 1;
 }
 
+PrettyPrint msgHistogram("Histogram");
+msgHistogram.consoleOut();
 
+fastaFile.count();
 
-
-std::cout << "Result of reading File: \n\n\n" << std::endl;
+PrettyPrint msgResult("Result of reading File: ");
+msgResult.consoleOut();
+//std::cout << "Result of reading File: \n\n\n" << std::endl;
 fastaFile.print();
 
 
 std::cout << "Writing to: " << argv[2] << std::endl;
-// fastaFile.write();
+fastaFile.write(argv[2]);
 std::cout << "\n\nprogram out" << std::endl;
 
 return 0;
