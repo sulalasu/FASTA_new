@@ -408,10 +408,9 @@ public:
 
     // count number of Nucleotides in a SINGLE Sequence
     // @param: const reference to string containing Nucleotide Sequence
-    std::map<char, int> count() const
+    std::map<char, int> count(std::string seq) const
     {
-        std::string seq = getAllSeqAsString();
-        LOG(seq);
+        //std::string seq = getAllSeqAsString();
         //TODO: add count of occurences in collected sequence
         std::map<char, int> hist = {
             {'A', 0},
@@ -433,21 +432,32 @@ public:
     */
     void drawHistogram()
     {
-        //TODO: draw histogram
-        std::map<char, int> countMap = count();
-        int sum = 0;
+        const Sequence* seq;
+        std::string headerString;
+        std::string seqString;
+        // loop over all Fasta objects within 'FastaFile' object
+        for (auto* fasta : m_fastaFile)
+        {
+            headerString = fasta->getHeader();
+            seq = fasta->getSequence();
+            seqString += seq->getSeqString();
 
-        // get sum:
-        for (const auto &[k, v] : countMap)
-        {
-            sum += v;
-            std::cout << k << ": " << v << std::endl;
-        }
-        LOG(sum);
-        LOG("printing histogram:\n");
-        for (const auto &[k, v] : countMap)
-        {
-            std::cout << k << ": " << std::string(v*30/sum, '*') << std::endl;
+
+            //TODO: draw histogram
+            std::map<char, int> countMap = count(seqString);
+            int sum = 0;
+
+            // get sum:
+            for (const auto &[k, v] : countMap)
+            {
+                sum += v;
+            }
+            LOG("printing histogram:\n");
+            std::cout << headerString << std::endl;
+            for (const auto &[k, v] : countMap)
+            {
+                std::cout << k << ": " << v << " " << std::string(v*30/sum, '*') << std::endl;
+            }
         }
     }
 
@@ -575,15 +585,10 @@ else
 
 PrettyPrint msgHistogram("Histogram");
 msgHistogram.consoleOut();
-LOG("PRINTING COLLECT");
-//fastaFile.count(fastaFile.collectSequences());
-//fastaFile.collectSequences();
 fastaFile.drawHistogram();
-LOG("PRINTING COLLECT");
 
 PrettyPrint msgResult("Result of reading File: ");
 msgResult.consoleOut();
-//std::cout << "Result of reading File: \n\n\n" << std::endl;
 fastaFile.print();
 
 
