@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <stdlib.h>     //for using the function sleep
+#include <map>
 
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
@@ -166,13 +166,13 @@ public:
         return m_nucleotideSequence;
     }
 
-    const std::string* getSeqString() const
+    std::string getSeqString() const
     {
-        std::string* SeqString = nullptr;
+        std::string SeqString;
 
-        for (auto* nt : m_nucleotideSequence)
+        for (auto nt : m_nucleotideSequence)
         {
-            SeqString->append((*nt->getNt()));
+            SeqString.append((*nt->getNt()));
         }
         return (SeqString);
     }
@@ -334,9 +334,7 @@ public:
     void print() const
     {
         m_pHeader->print();
-        std::cout << std::endl;
         m_pSequence->print();
-        std::cout << std::endl;
     }
     
     const std::string getHeader() const 
@@ -345,10 +343,19 @@ public:
         // TODO: add return function
     } 
 
-    const std::string* getSequence() const
+    const Sequence* getSequence() const //const std::string* getSequence() const
+    {
+        return (m_pSequence);
+    }
+
+    const std::string getSequenceString() const 
     {
         return (m_pSequence->getSeqString());
-    }
+        // TODO: add return function
+    } 
+    // {
+    //     return (m_pSequence->getSeqString());
+    // }
 };
 
 /* 
@@ -363,35 +370,87 @@ private:
 
 
 public:
-    // count number of Nucleotides in Sequence
-    const std::vector<const std::string*> collectSequences()
-    {
-        std::vector<const std::string*> p_SeqVector;
+    // collect all secquences of all entries
+    // const std::vector<const std::string*> collectSequences()
+    // {
+    //     std::vector<const std::string*> p_SeqVector;
 
+    //     for (auto* fasta : m_fastaFile)
+    //     {
+    //         p_SeqVector.push_back(fasta->getSequence());
+    //     }
+    //     LOG("in collect sequences")
+    //     for (auto elem : p_SeqVector)
+    //     {
+    //         LOG(elem);
+    //     }
+    //     return p_SeqVector;
+    // }
+
+    std::string getAllSeqAsString() const
+    {
+        const Sequence* seq;
+        std::string seqString;
+        // loop over all Fasta objects within 'FastaFile' object
         for (auto* fasta : m_fastaFile)
         {
-            p_SeqVector.push_back(fasta->getSequence());
+            seq = fasta->getSequence();
+            seqString += seq->getSeqString();
         }
-
-        for (auto elem : p_SeqVector)
-        {
-            LOG(elem);
-        }
-        return p_SeqVector;
+        return seqString;
     }
+    // {
+    //     for (auto fasta : m_fastaFile)
+    //     {
+    //         LOG(fasta->getSequence());
+    //         }
+    // }
 
-    int count(const std::string& seq) const
+    // count number of Nucleotides in a SINGLE Sequence
+    // @param: const reference to string containing Nucleotide Sequence
+    std::map<char, int> count() const
     {
+        std::string seq = getAllSeqAsString();
+        LOG(seq);
         //TODO: add count of occurences in collected sequence
-        std::vector<std::string> tst;
-        int x = 3;
-        return x;
+        std::map<char, int> hist = {
+            {'A', 0},
+            {'C', 0}, 
+            {'T', 0},
+            {'G', 0}
+        };
+        for (const auto& letter : seq)
+        {
+            hist[letter]++;
+        }
+
+
+        return hist;
     }
 
+    /*
+    calculate sum of nucleotides, then draw percentage based diagram
+    */
     void drawHistogram()
     {
         //TODO: draw histogram
+        std::map<char, int> countMap = count();
+        int sum = 0;
+
+        // get sum:
+        for (const auto &[k, v] : countMap)
+        {
+            sum += v;
+            std::cout << k << ": " << v << std::endl;
+        }
+        LOG(sum);
+        LOG("printing histogram:\n");
+        for (const auto &[k, v] : countMap)
+        {
+            std::cout << k << ": " << std::string(v*30/sum, '*') << std::endl;
+        }
     }
+
     // member function
     void write(const std::string& fileName) const
     {       
@@ -401,12 +460,13 @@ public:
         {
             outputFile << elem->getHeader();
             outputFile << std::endl;
-            outputFile << elem->getSequence();
+            outputFile << elem->getSequenceString();
             outputFile << std::endl;
 
         }
         outputFile.close();
     }
+
 
 
 
@@ -515,8 +575,11 @@ else
 
 PrettyPrint msgHistogram("Histogram");
 msgHistogram.consoleOut();
-
-//TODO: fastaFile.count();
+LOG("PRINTING COLLECT");
+//fastaFile.count(fastaFile.collectSequences());
+//fastaFile.collectSequences();
+fastaFile.drawHistogram();
+LOG("PRINTING COLLECT");
 
 PrettyPrint msgResult("Result of reading File: ");
 msgResult.consoleOut();
