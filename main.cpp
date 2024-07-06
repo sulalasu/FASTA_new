@@ -100,9 +100,10 @@ public:
     {
         std::cout << m_Nt;
     } 
-    std::string getNt() const
+    const std::string* getNt() //cant set function as const as it defines a variable
     {
-        return (m_Nt);
+        std::string* nt = &m_Nt;
+        return (nt);
     };
 };
 
@@ -165,13 +166,13 @@ public:
         return m_nucleotideSequence;
     }
 
-    std::string getSeqString() const
+    const std::string* getSeqString() const
     {
-        std::string SeqString;
+        std::string* SeqString = nullptr;
 
-        for (const auto& nt : m_nucleotideSequence)
+        for (auto* nt : m_nucleotideSequence)
         {
-            SeqString.append(nt->getNt());
+            SeqString->append((*nt->getNt()));
         }
         return (SeqString);
     }
@@ -344,7 +345,7 @@ public:
         // TODO: add return function
     } 
 
-    std::string getSequence() const
+    const std::string* getSequence() const
     {
         return (m_pSequence->getSeqString());
     }
@@ -363,9 +364,9 @@ private:
 
 public:
     // count number of Nucleotides in Sequence
-    std::string collectSequences() const
+    const std::vector<const std::string*> collectSequences()
     {
-        std::vector<std::string> p_SeqVector;
+        std::vector<const std::string*> p_SeqVector;
 
         for (auto* fasta : m_fastaFile)
         {
@@ -376,11 +377,15 @@ public:
         {
             LOG(elem);
         }
+        return p_SeqVector;
     }
 
     int count(const std::string& seq) const
     {
         //TODO: add count of occurences in collected sequence
+        std::vector<std::string> tst;
+        int x = 3;
+        return x;
     }
 
     void drawHistogram()
@@ -511,7 +516,7 @@ else
 PrettyPrint msgHistogram("Histogram");
 msgHistogram.consoleOut();
 
-fastaFile.count();
+//TODO: fastaFile.count();
 
 PrettyPrint msgResult("Result of reading File: ");
 msgResult.consoleOut();
