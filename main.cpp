@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <iomanip> // for setfill, setw
 
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
@@ -65,11 +66,11 @@ public:
         std::cout << "\n" 
         << std::string(m_msgSpacing, ' ')
         << m_message << "\n"
-        << std::string(m_totalwidth, '=')
+        << std::string(m_totalwidth, m_lineChar)
         << "\n" 
         << std::string(m_highlightSpacing, ' ')
         << m_highlight << "\n"
-        << std::string(m_totalwidth, '=')
+        << std::string(m_totalwidth, m_lineChar)
         << std::endl;    
     }
 };
@@ -168,11 +169,11 @@ public:
 
     std::string getSeqString() const
     {
-        std::string SeqString;
+        std::string SeqString = "";
 
         for (auto nt : m_nucleotideSequence)
         {
-            SeqString.append((*nt->getNt()));
+            SeqString += (*nt->getNt());
         }
         return (SeqString);
     }
@@ -370,42 +371,6 @@ private:
 
 
 public:
-    // collect all secquences of all entries
-    // const std::vector<const std::string*> collectSequences()
-    // {
-    //     std::vector<const std::string*> p_SeqVector;
-
-    //     for (auto* fasta : m_fastaFile)
-    //     {
-    //         p_SeqVector.push_back(fasta->getSequence());
-    //     }
-    //     LOG("in collect sequences")
-    //     for (auto elem : p_SeqVector)
-    //     {
-    //         LOG(elem);
-    //     }
-    //     return p_SeqVector;
-    // }
-
-    std::string getAllSeqAsString() const
-    {
-        const Sequence* seq;
-        std::string seqString;
-        // loop over all Fasta objects within 'FastaFile' object
-        for (auto* fasta : m_fastaFile)
-        {
-            seq = fasta->getSequence();
-            seqString += seq->getSeqString();
-        }
-        return seqString;
-    }
-    // {
-    //     for (auto fasta : m_fastaFile)
-    //     {
-    //         LOG(fasta->getSequence());
-    //         }
-    // }
-
     // count number of Nucleotides in a SINGLE Sequence
     // @param: const reference to string containing Nucleotide Sequence
     std::map<char, int> count(std::string seq) const
@@ -422,13 +387,11 @@ public:
         {
             hist[letter]++;
         }
-
-
         return hist;
     }
 
     /*
-    calculate sum of nucleotides, then draw percentage based diagram
+    calculate sum of nucleotides, then draw percentage based diagrams for each seq.
     */
     void drawHistogram()
     {
@@ -440,7 +403,7 @@ public:
         {
             headerString = fasta->getHeader();
             seq = fasta->getSequence();
-            seqString += seq->getSeqString();
+            seqString = seq->getSeqString();
 
 
             //TODO: draw histogram
@@ -452,11 +415,17 @@ public:
             {
                 sum += v;
             }
-            LOG("printing histogram:\n");
-            std::cout << headerString << std::endl;
+
+            //print histogram including Header line
+            std::cout << std::endl << headerString << std::endl;
+            std::cout << seqString << std::endl;
             for (const auto &[k, v] : countMap)
             {
-                std::cout << k << ": " << v << " " << std::string(v*30/sum, '*') << std::endl;
+                std::cout   << k << ": " 
+                            << std::setfill(' ') << std::setw(3) << v << " " 
+                            << std::string(v*40/sum, 'x') 
+                            << std::string(40 - v*40/sum, '-') 
+                            << std::endl;
             }
         }
     }
@@ -521,7 +490,7 @@ if (argc != 3)
 }
 
 
-PrettyPrint openingMsg(argv[1], "Trying to open file named");
+PrettyPrint openingMsg(argv[1], "Trying to open file named", ' ');
 openingMsg.consoleOut();
 // open and read file
 
@@ -583,18 +552,21 @@ else
     return 1;
 }
 
-PrettyPrint msgHistogram("Histogram");
+PrettyPrint msgHistogram("Histograms:");
 msgHistogram.consoleOut();
 fastaFile.drawHistogram();
 
-PrettyPrint msgResult("Result of reading File: ");
+PrettyPrint msgResult("Result of reading File:");
 msgResult.consoleOut();
+
 fastaFile.print();
 
-
-std::cout << "Writing to: " << argv[2] << std::endl;
+PrettyPrint msgOutputfile(argv[2], "Writing to: ", ' ');
+msgOutputfile.consoleOut();
 fastaFile.write(argv[2]);
-std::cout << "\n\nprogram out" << std::endl;
 
+
+PrettyPrint msgEnd("Program finished successfully", "", ' ');
+msgEnd.consoleOut();
 return 0;
 }
