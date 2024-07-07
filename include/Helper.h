@@ -1,6 +1,3 @@
-//Class XXX
-// ; am Ende
-
 #pragma once
 
 #include <string>

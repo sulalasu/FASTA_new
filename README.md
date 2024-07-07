@@ -14,6 +14,22 @@ e.g: '../input.fasta' when running main and trying to access input.fasta in the 
 
 ---
 
+# Differences .h/.cpp files:
+
+## .cpp -- **Definitions**
+// #include XXX.h
+// OHNE Class XXXX
+// keine Member variables!
+// keine constr. deletions --> müssen im .h deleted werden:
+// kein private/public etc.
+// kein ; am Ende
+// keine default parameter für functions
+// Class::classFunction, Class::Class()
+
+## .h **Declarations**
+//Class XXX
+// ; am Ende
+
 
 ---
   

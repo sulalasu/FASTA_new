@@ -1,13 +1,4 @@
 // contains helper functions
-
-// #include XXX.h
-// OHNE Class XXXX
-// keine Member variables!
-// keine constr. deletions --> müssen im .h deleted werden:
-// kein private/public etc.
-// kein ; am Ende
-// keine default parameter für functions
-// Class::classFunction, Class::Class()
 #include <string>
 #include <iostream>
 
