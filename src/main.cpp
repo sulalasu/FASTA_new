@@ -5,6 +5,8 @@
 #include <map>
 #include <iomanip> // for setfill, setw
 
+#include "Helper.h"
+
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
 #define NtLOG() std::cout << pNt->getNt() << std::endl;
@@ -15,65 +17,7 @@
 //========================================================================  
 
 
-class PrettyPrint
-{
-private:
-    std::string m_message;
-    std::string m_highlight;
-    char m_lineChar;
-    int m_totalwidth;
-    int m_msgSpacing;
-    int m_highlightSpacing;
 
-    int totalWidth(const int i_totalWidth)
-    {
-        if (m_message.length() > i_totalWidth) 
-        {
-            return ( m_message.length() + 2 );
-        }
-        else 
-        {
-            return (m_totalwidth = i_totalWidth);
-        }
-    }
-    
-    int spacingMessage()
-    { 
-        return ((m_totalwidth-m_message.length()) / 2);
-    }
-
-    int spacingHighlight()
-    { 
-        return ((m_totalwidth-m_highlight.length()) / 2);
-    }
-public:
-    // structor
-    PrettyPrint() = delete;
-    PrettyPrint(const std::string& i_highlight, const std::string& i_message = "", 
-                char i_lineChar = '=', int i_totalwidth = 60) 
-    : m_message(i_message),
-      m_highlight(i_highlight),
-      m_lineChar(i_lineChar),
-      m_totalwidth(totalWidth(i_totalwidth)),
-      m_msgSpacing(spacingMessage()),
-      m_highlightSpacing(spacingHighlight())
-    {};
-    ~PrettyPrint() = default;
-
-
-    void consoleOut() const
-    {
-        std::cout << "\n" 
-        << std::string(m_msgSpacing, ' ')
-        << m_message << "\n"
-        << std::string(m_totalwidth, m_lineChar)
-        << "\n" 
-        << std::string(m_highlightSpacing, ' ')
-        << m_highlight << "\n"
-        << std::string(m_totalwidth, m_lineChar)
-        << std::endl;    
-    }
-};
 
 
 //========================================================================  
