@@ -1,10 +1,13 @@
-build with 'cmake -S . -B build'
-run with 'cmake --build build && ./build/fasta [input_file_path.fasta] [output_file_path.fasta]'
+build with  
+**'cmake -S . -B build'**
+
+run with  
+**'cmake --build build && ./build/fasta [input_file_path.fasta] [output_file_path.fasta]'**
 
 Remember to pass file-argument as relative path:
 e.g: '../input.fasta' when running main and trying to access input.fasta in the parent directory.
 
-**Assumptions**:
+#### **Assumptions**:
 - no Comment lines, that dont start with '>'
 - all lines that dont start with '>' are assumed to be sequences.
 - Non-ACGT/Non-acgt characters are ignored, when parsing a sequence.
@@ -12,7 +15,12 @@ e.g: '../input.fasta' when running main and trying to access input.fasta in the 
 ---
 
 
-# **General, personal Information to remember:**
+---
+  
+    
+    
+
+**General, personal Information to remember:**
 # Header und Source (.cpp) Files:
 
 ## Header files .h
