@@ -1,9 +1,18 @@
 build with 'cmake -S . -B build'
 run with 'cmake --build build && ./build/fasta test.fasta'
 
-Assumptions:
-- no Comment lines, that dont start with '>'
+Remember to pass file-argument as relative path:
+e.g: '../input.fasta' when running main and trying to access input.fasta in the parent directory.
 
+**Assumptions**:
+- no Comment lines, that dont start with '>'
+- all lines that dont start with '>' are assumed to be sequences.
+- Non-ACGT/Non-acgt characters are ignored, when parsing a sequence.
+
+---
+
+
+# **General, personal Information to remember:**
 # Header und Source (.cpp) Files:
 
 ## Header files .h
@@ -105,5 +114,3 @@ A pure virtual function is a virtual function whose declaration ends in =0:
 A pure virtual function implicitly makes the class it is defined for abstract. Abstract classes cannot be instantiated. Derived classes need to override/implement all inherited pure virtual functions. If they do not, they too will become abstract.
 https://stackoverflow.com/questions/2652198/difference-between-a-virtual-function-and-a-pure-virtual-function
 
-# DELETE:
-cmake video bis 43:00 nochmal angeschaut.

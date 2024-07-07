@@ -473,9 +473,9 @@ public:
 
 int main(int argc, char* argv[])
 {
-argc = 3;
-argv[1] = "input.fasta";
-argv[2] = "output.fasta";
+// argc = 3;
+// argv[1] = "input.fasta";
+// argv[2] = "output.fasta";
 
 //check for number of command line arguments
 if (argc != 3)

@@ -1,0 +1,1 @@
+// contains Fasta, whcih contains Sequence and Header class as member variablse
