@@ -1,5 +1,5 @@
 build with 'cmake -S . -B build'
-run with 'cmake --build build && ./build/fasta test.fasta'
+run with 'cmake --build build && ./build/fasta [input_file_path.fasta] [output_file_path.fasta]'
 
 Remember to pass file-argument as relative path:
 e.g: '../input.fasta' when running main and trying to access input.fasta in the parent directory.
