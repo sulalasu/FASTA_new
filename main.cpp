@@ -446,9 +446,6 @@ public:
         outputFile.close();
     }
 
-
-
-
     //getter
 
     void print()
@@ -459,8 +456,6 @@ public:
             std::cout << std::endl;
         }
     }
-
-
 
     //setter
     
