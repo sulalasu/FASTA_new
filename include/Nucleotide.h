@@ -3,8 +3,6 @@
 #include <string>
 #include <iostream>
 
-
-
 class Nucleotide 
 {
 private:
@@ -12,7 +10,6 @@ private:
 
 protected:
     Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derived classes
-    // Change "protected" to "public" to allow others to instantiate A.
 
 public:
     //constructor
@@ -44,19 +41,19 @@ public:
 class Thymine : public Nucleotide
 {
 public:
-    Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+    Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'T'
 };
 
 
 class Guanine : public Nucleotide
 {
 public:
-    Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+    Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'G'
 };
 
 
 class Cytosine : public Nucleotide 
 {
 public:
-    Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+    Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'C'
 };

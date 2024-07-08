@@ -1,48 +1,34 @@
-//contains vector of Nucleotide Class (or derived of it).
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <vector>
-
-#include "Nucleotide.h"
-
-class Sequence 
+#include "Header.h"
+#include "Sequence.h"
+/* 
+Fasta class to save and output the contents.
+Each Fasta Object contains to member variables which are pointers
+to a Header and a Sequence Object respectively.
+*/
+class Fasta
 {
 private:
-    std::vector<Nucleotide*> m_nucleotideSequence;
+    // member vars
+    Header* m_pHeader;
+    Sequence* m_pSequence;
 
 public:
-    //de/constructors:
+    // 'structors
 
-    Sequence() {}; 
-    ~Sequence() {}; 
+    Fasta(); 
+    Fasta(Header* i_pHeader, Sequence* i_pSequence);
+    ~Fasta() = default;
+
+    // setter
+
+    void addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence);
 
     //getter
 
     void print() const;
-
-    const std::vector<Nucleotide*>& getSeq() const;
-
-
-    std::string getSeqString() const;
-
-
-    bool isEmpty() const;
-
-
-    //setter
-
-    void add(Nucleotide* i_pNucleotide);
-
-
-    void clear();
-
-
-    /*
-    Input: string of a sequence.
-    String gets parsed and corresponding nucleotides added vector of Nucleotides
-    */
-    void parseStringToSequence(const std::string& i_line);
-}; 
-
+    const std::string getHeader() const;
+    const Sequence* getSequence() const; //const std::string* getSequence() const
+    const std::string getSequenceString() const;
+};

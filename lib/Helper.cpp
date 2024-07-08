@@ -7,11 +7,10 @@
 // structor
 
 //PrettyPrint::PrettyPrint() = delete;
-PrettyPrint::PrettyPrint(
-        const std::string& i_highlight, 
-        const std::string& i_message, 
-        char i_lineChar, 
-        int i_totalwidth) 
+PrettyPrint::PrettyPrint(   const std::string& i_highlight, 
+                            const std::string& i_message, 
+                            char i_lineChar, 
+                            int i_totalwidth) 
   : m_message(i_message),
     m_highlight(i_highlight),
     m_lineChar(i_lineChar),
@@ -32,7 +31,7 @@ int PrettyPrint::totalWidth(const int i_totalWidth)
     {
         return (m_totalwidth = i_totalWidth);
     }
-};
+}
 
 int PrettyPrint::spacingMessage()
 { 
@@ -42,7 +41,7 @@ int PrettyPrint::spacingMessage()
 int PrettyPrint::spacingHighlight()
 { 
     return ((m_totalwidth-m_highlight.length()) / 2);
-};
+}
 
 
 // member functions

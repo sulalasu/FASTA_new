@@ -1,108 +1,48 @@
-// contains Fasta, whcih contains Sequence and Header class as member variablse
-//contains vector of Nucleotide Class (or derived of it).
+#include "Header.h"
 #include "Fasta.h"
-#include "Nucleotide.h"
+#include "Sequence.h"
 
+//'structors
 
-std::vector<Nucleotide*> m_nucleotideSequence;
+Fasta::Fasta() 
+    : m_pHeader(nullptr), 
+      m_pSequence(nullptr) 
+{}
 
-//de/constructors:
+Fasta::Fasta(Header* i_pHeader, Sequence* i_pSequence)
+    : m_pHeader(i_pHeader),
+      m_pSequence(i_pSequence)
+{}
 
-// Sequence::Sequence() {}
-// Sequence::~Sequence() {}
+//Fasta::~Fasta() = default;
+
+// setter
+
+void Fasta::addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
+{
+    this->m_pHeader = i_pHeader;
+    this->m_pSequence = i_pSequence;
+}
 
 //getter
 
-void Sequence::print() const
+void Fasta::print() const
 {
-    for (auto elem : m_nucleotideSequence)
-    {
-        elem->Nucleotide::print();
-    }
+    m_pHeader->print();
+    m_pSequence->print();
 }
 
-const std::vector<Nucleotide*>& Sequence::getSeq() const 
+const std::string Fasta::getHeader() const 
 {
-    return m_nucleotideSequence;
-}
+    return (m_pHeader->getHeader());
+} 
 
-std::string Sequence::getSeqString() const
+const Sequence* Fasta::getSequence() const //const std::string* getSequence() const
 {
-    std::string SeqString = "";
-
-    for (auto nt : m_nucleotideSequence)
-    {
-        SeqString += (*nt->getNt());
-    }
-    return (SeqString);
+    return (m_pSequence);
 }
 
-bool Sequence::isEmpty() const
+const std::string Fasta::getSequenceString() const 
 {
-    if (m_nucleotideSequence.empty()) 
-    {
-        return(true);
-    }
-    else 
-    {
-        return(false);
-    }
-}
-
-//setter
-
-void Sequence::add(Nucleotide* i_pNucleotide)
-{
-    m_nucleotideSequence.push_back(i_pNucleotide);
-}
-
-void Sequence::clear() 
-{
-    m_nucleotideSequence.clear();
-}
-
-/*
-Input: string of a sequence.
-String gets parsed and corresponding nucleotides added vector of Nucleotides
-*/
-void Sequence::parseStringToSequence(const std::string& i_line) 
-{
-    for (const auto& nt : i_line)
-    {
-    switch (nt)
-    {
-        case 'a':
-        case 'A':
-            {
-            Adenine* pNt = new Adenine();
-            Sequence::add(pNt);
-            }
-            break;
-        case 't':
-        case 'T':
-            {
-            Thymine* pNt = new Thymine();
-            Sequence::add(pNt);
-            } 
-            break;
-
-        case 'g':
-        case 'G':
-            {
-            Guanine* pNt = new Guanine();
-            Sequence::add(pNt);
-            } 
-            break;
-        case 'c':
-        case 'C':
-            {
-            Cytosine* pNt = new Cytosine();
-            Sequence::add(pNt);
-            }
-            break;
-
-    }
-}
-}
-
-
+    return (m_pSequence->getSeqString());
+} 
