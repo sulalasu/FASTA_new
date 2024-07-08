@@ -1,8 +1,9 @@
-//for Nucleotide Base Class as well as derived Classes
 #pragma once
 
 #include <string>
 #include <iostream>
+
+
 
 class Nucleotide 
 {
@@ -59,4 +60,3 @@ class Cytosine : public Nucleotide
 public:
     Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 };
-

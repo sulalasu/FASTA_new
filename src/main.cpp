@@ -6,6 +6,9 @@
 #include <iomanip> // for setfill, setw
 
 #include "Helper.h"
+#include "Fasta.h"
+#include "FastaFile.h"
+#include "Nucleotide.h"
 
 #define msgLOG(message, x) std::cout << message << ":  " << x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
@@ -27,113 +30,6 @@
 
 
 
-
-//contains vector of Nucleotide Class (or derived of it).
-class Sequence 
-{
-private:
-    std::vector<Nucleotide*> m_nucleotideSequence;
-
-public:
-    //de/constructors:
-
-    Sequence() {}
-    ~Sequence() {}
-
-    //getter
-
-    void print() const
-    {
-        for (auto elem : m_nucleotideSequence)
-        {
-            elem->Nucleotide::print();
-        }
-    }
-
-    const std::vector<Nucleotide*>& getSeq() const 
-    {
-        return m_nucleotideSequence;
-    }
-
-    std::string getSeqString() const
-    {
-        std::string SeqString = "";
-
-        for (auto nt : m_nucleotideSequence)
-        {
-            SeqString += (*nt->getNt());
-        }
-        return (SeqString);
-    }
-
-    bool isEmpty() const
-    {
-        if (m_nucleotideSequence.empty()) 
-        {
-            return(true);
-        }
-        else 
-        {
-            return(false);
-        }
-    }
-
-    //setter
-
-    void add(Nucleotide* i_pNucleotide)
-    {
-        m_nucleotideSequence.push_back(i_pNucleotide);
-    }
-
-    void clear() 
-    {
-        m_nucleotideSequence.clear();
-    }
-
-    /*
-    Input: string of a sequence.
-    String gets parsed and corresponding nucleotides added vector of Nucleotides
-    */
-    void parseStringToSequence(const std::string& i_line) 
-    {
-        for (const auto& nt : i_line)
-        {
-        switch (nt)
-        {
-            case 'a':
-            case 'A':
-                {
-                Adenine* pNt = new Adenine();
-                Sequence::add(pNt);
-                }
-                break;
-            case 't':
-            case 'T':
-                {
-                Thymine* pNt = new Thymine();
-                Sequence::add(pNt);
-                } 
-                break;
-
-            case 'g':
-            case 'G':
-                {
-                Guanine* pNt = new Guanine();
-                Sequence::add(pNt);
-                } 
-                break;
-            case 'c':
-            case 'C':
-                {
-                Cytosine* pNt = new Cytosine();
-                Sequence::add(pNt);
-                }
-                break;
-
-        }
-    }
-    }
-}; 
 
 /*
 contains a string with the header info

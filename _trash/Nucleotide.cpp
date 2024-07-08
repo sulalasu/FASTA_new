@@ -1,4 +1,5 @@
 //for Nucleotide Base Class as well as derived Classes
+
 #include <string>
 #include <iostream>
 
@@ -12,7 +13,7 @@ Nucleotide::Nucleotide(std::string i_Nt) : m_Nt(i_Nt) {} // Accessible to derive
 Nucleotide::Nucleotide() {}
 
 //destructor
-virtual Nucleotide::~Nucleotide() {}
+// virtual Nucleotide::~Nucleotide() {}
 
 //member functions:
 void Nucleotide::print() const
@@ -25,18 +26,21 @@ const std::string* Nucleotide::getNt() //cant set function as const as it define
     return (nt);
 }
 
-Adenine::Adenine() : Nucleotide("A") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+
+
+
+Adenine::Adenine("A") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 
 
 
 
-Thymine::Thymine() : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+Thymine::Thymine()// : Nucleotide("T") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 
 
 
 
-Guanine::Guanine() : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+Guanine::Guanine()// : Nucleotide("G") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
 
 
 
-Cytosine::Cytosine() : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
+Cytosine::Cytosine()// : Nucleotide("C") {} // Calls Nucleotide's constructor, initializing m_Nt to 'A'
