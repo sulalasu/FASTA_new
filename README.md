@@ -11,7 +11,7 @@ e.g: '../input.fasta' when running main and trying to access input.fasta in the 
 # Debugging
 
 For debugging with VSCode and CMake:
-Build within cmake, not within terminal!
+Build within VSCode, not within terminal!
 
 Run command palette (View>Command Palette):
 Cmake: Scan for Kits 
