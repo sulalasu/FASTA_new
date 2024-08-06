@@ -7,6 +7,25 @@ run with
 Remember to pass file-argument as relative path:
 e.g: '../input.fasta' when running main and trying to access input.fasta in the parent directory.
 
+
+# Debugging
+
+For debugging with VSCode and CMake:
+Build within cmake, not within terminal!
+
+Run command palette (View>Command Palette):
+Cmake: Scan for Kits 
+then
+CMake: Select Kit (I've chosen GCC 9.4.0 x86_64-linux-gnu).
+
+Then within main.cpp file open: 
+Cmake: Build (in command palette)
+
+Then at the bottom of the screen, theres a little play button, press that to run the file (don't know how to supply args here though)
+And for **debugging: just click on the bug to the left of the play button!**
+
+
+
 #### **Assumptions**:
 - no Comment lines, that dont start with '>'
 - all lines that dont start with '>' are assumed to be sequences.

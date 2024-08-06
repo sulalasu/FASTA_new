@@ -22,4 +22,5 @@ add_executable(fasta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" ${LIB_FILES})
 message(STATUS "Linking the library to the executable")
 
 #Debugging. Uncomment following line to debug:
-#set_target_properties(fasta PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "test.fasta") 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+set_target_properties(fasta PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "test.fasta") 

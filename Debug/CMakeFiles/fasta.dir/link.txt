@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/fasta.dir/src/main.cpp.o CMakeFiles/fasta.dir/lib/Fasta.cpp.o CMakeFiles/fasta.dir/lib/FastaFile.cpp.o CMakeFiles/fasta.dir/lib/Header.cpp.o CMakeFiles/fasta.dir/lib/Helper.cpp.o CMakeFiles/fasta.dir/lib/Sequence.cpp.o  -o fasta 

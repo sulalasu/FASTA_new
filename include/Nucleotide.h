@@ -16,7 +16,7 @@ public:
     Nucleotide() {}
     
     //destructor
-    virtual ~Nucleotide() {}
+    virtual ~Nucleotide() = default;
 
     //member functions:
     void print() const

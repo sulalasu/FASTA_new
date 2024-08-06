@@ -16,7 +16,6 @@ private:
 
 public:
     // 'structors
-
     Fasta(); 
     Fasta(Header* i_pHeader, Sequence* i_pSequence);
     ~Fasta() = default;
@@ -28,7 +27,8 @@ public:
     //getter
 
     void print() const;
-    const std::string getHeader() const;
+    const Header* getHeader() const;
     const Sequence* getSequence() const; //const std::string* getSequence() const
     const std::string getSequenceString() const;
+    const std::string getHeaderString() const;
 };

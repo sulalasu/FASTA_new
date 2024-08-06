@@ -6,7 +6,6 @@
 
 // structor
 
-//PrettyPrint::PrettyPrint() = delete;
 PrettyPrint::PrettyPrint(   const std::string& i_highlight, 
                             const std::string& i_message, 
                             char i_lineChar, 

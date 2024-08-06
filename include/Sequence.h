@@ -18,7 +18,9 @@ public:
     //de/constructors:
 
     Sequence() {}; 
-    ~Sequence() {}; 
+    ~Sequence();
+
+
 
     //getter
 
@@ -45,6 +47,5 @@ public:
     Input: string of a sequence.
     String gets parsed and corresponding nucleotides added vector of Nucleotides
     */
-    void parseStringToSequence(const std::string& i_line);
-}; 
-
+    void parseStringToSequence(const std::string& i_line, Adenine* pAdenine, Guanine* pGuanine, Cytosine* pCytosine, Thymine* pThymine);
+};

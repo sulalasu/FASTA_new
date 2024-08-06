@@ -10,6 +10,19 @@
 #include "FastaFile.h"
 #include "Sequence.h"
 
+// destructor
+FastaFile::~FastaFile() 
+{
+    for (auto fasta : m_fastaFile) {
+        delete fasta->getSequence();
+        delete fasta->getHeader();
+        delete fasta; 
+    }
+
+    std::cout << "Destructor for Fasta File called.";
+}
+
+
 // member function
 
 /* count number of Nucleotides in a SINGLE Sequence
@@ -40,7 +53,7 @@ void FastaFile::drawHistogram()
     // loop over all Fasta objects within 'FastaFile' object
     for (auto* fasta : m_fastaFile)
     {
-        headerString = fasta->getHeader();
+        headerString = fasta->getHeaderString();
         seq = fasta->getSequence();
         seqString = seq->getSeqString();
 

@@ -14,8 +14,6 @@ Fasta::Fasta(Header* i_pHeader, Sequence* i_pSequence)
       m_pSequence(i_pSequence)
 {}
 
-//Fasta::~Fasta() = default;
-
 // setter
 
 void Fasta::addHeaderSeqPair(Header* i_pHeader, Sequence* i_pSequence)
@@ -32,9 +30,9 @@ void Fasta::print() const
     m_pSequence->print();
 }
 
-const std::string Fasta::getHeader() const 
+const Header* Fasta::getHeader() const 
 {
-    return (m_pHeader->getHeader());
+    return (m_pHeader);
 } 
 
 const Sequence* Fasta::getSequence() const //const std::string* getSequence() const
@@ -45,4 +43,10 @@ const Sequence* Fasta::getSequence() const //const std::string* getSequence() co
 const std::string Fasta::getSequenceString() const 
 {
     return (m_pSequence->getSeqString());
+} 
+
+
+const std::string Fasta::getHeaderString() const 
+{
+    return (m_pHeader->getHeader());
 } 

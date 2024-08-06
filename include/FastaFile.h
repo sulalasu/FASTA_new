@@ -16,6 +16,10 @@ private:
 
 
 public:
+    // destructor 
+    ~FastaFile();
+
+
     // member functions
 
     std::map<char, int> count(std::string seq) const;

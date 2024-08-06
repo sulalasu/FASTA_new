@@ -23,6 +23,12 @@
 
 int main(int argc, char* argv[])
 {
+    // only for debuggin:
+    // argc = 3;
+    // argv[1] = "../input.fasta";
+    // argv[2] = "../output_3.fasta";
+
+
     //check for number of command line arguments
     if (argc != 3)
     {
@@ -30,13 +36,19 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    //initialize pointers to the Nucleotides and fastaFile as global variables:
+    Adenine* pAdenine = new Adenine();
+    Cytosine* pCytosine = new Cytosine();
+    Guanine* pGuanine = new Guanine();
+    Thymine* pThymine = new Thymine();
+
+    FastaFile fastaFile;
 
     PrettyPrint openingMsg(argv[1], "Trying to open file named", ' ');
     openingMsg.consoleOut();
 
     // open and read file
     std::ifstream inputFile(argv[1]);
-    FastaFile fastaFile;
 
     if (inputFile.is_open())
     {
@@ -55,6 +67,7 @@ int main(int argc, char* argv[])
             // separate IF to catch last line; check eof to not have to write same code twice (for appending last seq/header)
             if (line[0] == '>' || inputFile.eof() == true) 
             {
+
                 // the previous Header/Sequence is fully filled and can be appended to Fasta object
                 if(!headerString.empty() && !sequenceString.empty())
                 {
@@ -63,12 +76,12 @@ int main(int argc, char* argv[])
                     Fasta* pFasta = new Fasta();
 
                     pHeader->append(headerString);
-                    pSequence->parseStringToSequence(sequenceString);
+                    pSequence->parseStringToSequence(sequenceString, pAdenine, pGuanine, pCytosine, pThymine);
                     pFasta->addHeaderSeqPair(pHeader, pSequence);
                     fastaFile.add(pFasta);
                     sequenceString.clear();
                     headerString.clear();
-
+                    
                 }
                 
                 // to remove '>' if two consecutive header lines in input
@@ -82,6 +95,7 @@ int main(int argc, char* argv[])
                     headerString = line; 
                 }
             }
+
         }
     inputFile.close();
     }
@@ -91,6 +105,7 @@ int main(int argc, char* argv[])
         std::cout << "Couldnt open file '" << argv[1] << "'." << std::endl; 
         return 1;
     }
+
 
     // print histogram to console
     PrettyPrint msgHistogram("Histograms:");
@@ -110,6 +125,11 @@ int main(int argc, char* argv[])
     // Message for success
     PrettyPrint msgEnd("Program finished successfully", "", ' ');
     msgEnd.consoleOut();
-    
+
+    delete pGuanine;
+    delete pThymine;
+    delete pAdenine;
+    delete pCytosine;
+
     return 0;
 }

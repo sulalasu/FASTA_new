@@ -10,7 +10,6 @@
 
 Header::Header() : m_header() {}
 Header::Header(const std::string& i_header) : m_header(i_header) {}
-//Header::~Header() = default;
 
 //getter:
 

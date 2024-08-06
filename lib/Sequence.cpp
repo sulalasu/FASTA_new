@@ -3,6 +3,9 @@
 #include "Sequence.h"
 #include "Nucleotide.h"
 
+// destructor
+Sequence::~Sequence() {}
+
 //getter
 
 // prints the sequence to console
@@ -65,7 +68,7 @@ void Sequence::clear()
 Input: string of a sequence.
 String gets parsed and corresponding nucleotides added vector of Nucleotides
 */
-void Sequence::parseStringToSequence(const std::string& i_line) 
+void Sequence::parseStringToSequence(const std::string& i_line, Adenine* pAdenine, Guanine* pGuanine, Cytosine* pCytosine, Thymine* pThymine) 
 {
     for (const auto& nt : i_line)
     {
@@ -74,30 +77,33 @@ void Sequence::parseStringToSequence(const std::string& i_line)
         case 'a':
         case 'A':
             {
-            Adenine* pNt = new Adenine();
-            Sequence::add(pNt);
+            //Adenine* pNt = new Adenine();
+            Sequence::add(pAdenine);
             }
             break;
         case 't':
         case 'T':
             {
-            Thymine* pNt = new Thymine();
-            Sequence::add(pNt);
+            //Thymine* pNt = new Thymine();
+            //Sequence::add(pNt);
+            Sequence::add(pThymine);
             } 
             break;
 
         case 'g':
         case 'G':
             {
-            Guanine* pNt = new Guanine();
-            Sequence::add(pNt);
+            // Guanine* pNt = new Guanine();
+            // Sequence::add(pNt);
+            Sequence::add(pGuanine);
             } 
             break;
         case 'c':
         case 'C':
             {
-            Cytosine* pNt = new Cytosine();
-            Sequence::add(pNt);
+            // Cytosine* pNt = new Cytosine();
+            // Sequence::add(pNt);
+            Sequence::add(pCytosine);
             }
             break;
 
