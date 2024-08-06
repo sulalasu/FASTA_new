@@ -86,7 +86,7 @@ void FastaFile::write(const std::string& fileName) const
     outputFile.open(fileName);
     for (auto elem : m_fastaFile)
     {
-        outputFile << elem->getHeader();
+        outputFile << elem->getHeaderString();
         outputFile << std::endl;
         outputFile << elem->getSequenceString();
         outputFile << std::endl;
